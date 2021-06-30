@@ -1,0 +1,29 @@
+﻿@model PastorNub.Models.ApplicationUser
+@{
+    ViewBag.Title = "Зміна аватару";
+}
+<div class="container">
+    <div class="jumbotron text-center row mt-5 AccountSettingsStyle">
+        <div class="col-12">
+            <h2>@ViewBag.Title.</h2>
+            <h4>
+                Виберіть файл для зміни аватару
+            </h4>
+            <hr />
+        </div>
+        <div class="col-12">
+            <h5>Аватар</h5>
+            <div class="form-group">
+                <div class="col-md-12">
+                    <img height="100" width="100" style="display: inline;" src="~/Files/Avatar/@Model.Avatar" />
+                </div>
+                @using (Html.BeginForm("Avatar", "Manage", FormMethod.Post, new { @class = "form-horizontal col-12 text-center", role = "form", enctype = "multipart/form-data" }))
+                {
+                    <input type="file" class="btn btn-primary mt-3 col-6" name="File" />
+                    <input type="submit" class="btn btn-primary mt-3 col-6" value="Підтвердити"/>
+                    <a class="btn btn-primary col-6 mt-3" href="~/Manage/Index">Назад</a>
+                }
+            </div>
+    </div>
+</div>
+

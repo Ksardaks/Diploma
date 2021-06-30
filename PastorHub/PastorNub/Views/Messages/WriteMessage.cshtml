@@ -1,0 +1,15 @@
+﻿@model PastorNub.Models.ChatRoom
+@using Microsoft.AspNet.Identity;
+
+@foreach (var i in Model.ChatMessages)
+{
+    <div class="row col-4 mr-auto ml-auto mt-5 pl-0 pr-0 pt-4 pb-4 @if (i.User.Id == User.Identity.GetUserId()) { @("") } " style="@if (i.User.Id != User.Identity.GetUserId()) { @("background-color:Gainsboro; right: 120px;") } else { @("background-color:lightblue; left: 120px;") } ">
+        <div class="col-12">
+            <strong class="ml-3">@i.User.UserName</strong>
+            <small class="ml-1">@i.Date.ToShortDateString() @i.Date.ToShortTimeString()</small>
+            <div class="col-12 ml-1" style="word-wrap: break-word;">
+                @Html.Raw(i.Message)
+            </div>
+        </div>
+    </div>
+}

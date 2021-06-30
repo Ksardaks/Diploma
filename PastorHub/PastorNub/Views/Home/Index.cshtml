@@ -1,0 +1,28 @@
+﻿@model List<PastorNub.Models.Post>
+@using Microsoft.AspNet.Identity;
+@{
+    ViewBag.Title = "Home Page";
+}
+<div id="menu">
+
+</div>
+
+<div class="container mt-5">
+    <div id="Load" style="display: block;" class="col-6 ml-auto mr-auto jumbotron text-center ">
+        <p>Завантаження</p>
+        <img src="https://i.gifer.com/origin/4d/4dc11d17f5292fd463a60aa2bbb41f6a_w200.gif" width="30" />
+    </div>
+    <div id="Content">
+
+    </div>
+</div>
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        setTimeout(() => $('#Content').load('@Url.Action("PostList", "Common")?Id=&SortBy=&Favorite=false', function () {
+            document.getElementById('Load').setAttribute('style', 'display: none;');
+
+        }), 400);
+        RenderMenu("");
+    });
+</script>
+

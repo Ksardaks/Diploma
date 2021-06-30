@@ -1,0 +1,88 @@
+﻿@model PastorNub.Models.ApplicationUser
+@using Microsoft.AspNet.Identity
+@using PastorNub.Models
+@{
+    ViewBag.Title = "Керування обліковим записом";
+}
+
+    <div class="container">
+        <div class="jumbotron text-center row mt-5 AccountSettingsStyle">
+            <div class="col-12">
+                <h2>@ViewBag.Title.</h2>
+                <h4>
+                    Інформація про провас та параметри облікового запису
+                </h4>
+                <hr />
+            </div>
+            <div class="col-6 text-center">
+                <h5>Персональна інформація</h5>
+                <div class="form-group">
+                    <label class="col-md-12 control-label"><strong>ПІП</strong></label>
+                    <div class="col-md-12">
+                        <label>@Model.Surname</label> <label>@Model.Name</label> <label>@Model.MiddleName</label>
+                    </div>
+                </div>
+                @if (!User.IsInRole("administrator"))
+                {
+                    if (User.IsInRole("pastor"))
+                    {
+                        <div class="form-group">
+                            <label class="col-md-12 control-label"><strong>Освіта</strong></label>
+                            <div class="col-md-12">
+                                <label>
+                                    @if (Model.Pastor != null)
+                                    {@Model.Pastor.Education}
+                                </label>
+                            </div>
+                        </div>
+                    }
+                    <div class="form-group">
+                        <label class="col-md-12 control-label"><strong>Конфесії</strong></label>
+                        <div class="col-md-12">
+                            @if (Model.UserConfessions != null)
+                            {
+                                foreach (var i in Model.UserConfessions)
+                                {
+                                    <label class="d-block">
+                                        @(i.Confession.ConfessionName)
+                                    </label>
+
+                                }
+                            }
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="col-md-12 control-label"><strong>Дата народження</strong></label>
+                        <div class="col-md-12">
+                            <label>@Model.Born</label>
+                        </div>
+                    </div>
+                }
+
+                @Html.ActionLink("Редагувати персональну інформацю", "ChangePersonalInfo", "Manage", new { @class = "btn btn-outline-primary col-9" })
+                @if (Model.UserConfessions.Count < 4)
+                {
+                    @Html.ActionLink("Редагувати конфесії", "SelectConfessions", "Manage", new { @class = "btn mt-2 btn-outline-primary col-9" })
+                }
+
+
+            </div>
+            <div class="col-6">
+                <h5>Параметри</h5>
+                <div class="form-group">
+                    <label class="col-md-12 control-label"><strong>Аватар</strong></label>
+                    <div class="col-md-12">
+                        <img height="100" width="100" style="display: inline;" src="~/Files/Avatar/@Model.Avatar" />
+                    </div>
+                    <div class="col-md-12 mt-3">
+                        <a href="~/Manage/Avatar" class="btn btn-outline-primary col-12">Змінити аватар</a>
+                    </div>
+                    <div class="col-md-12">
+                        <label class="col-12"></label>
+                        @Html.ActionLink("Зміна паролю", "ChangePassword", "Manage", new { @class = "btn btn-outline-primary col-12" })
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+

@@ -1,0 +1,24 @@
+﻿@model List<PastorNub.Models.Comments>
+@using Microsoft.AspNet.Identity;
+@foreach (var Comment in Model.OrderByDescending(i => i.Date))
+{
+    <div class="row col-12 mt-5">
+        <div>
+            <img height="50" width="50" style="display: inline;" src="~/Files/Avatar/@Comment.Autor.Avatar" />
+        </div>
+        <div class="col-11">
+            <strong>@Comment.Autor.UserName</strong>
+            <small class="ml-1">@Comment.Date.ToShortDateString()</small>
+            <div class="col-12">
+                @Html.Raw(Comment.Text)
+            </div>
+        </div>
+        @if (Comment.Autor.Id == User.Identity.GetUserId())
+        {
+            <div class="col-6">
+                @Ajax.ActionLink("Редагувати", "EditComment", "Common", new { Id = Comment.Id }, new AjaxOptions { UpdateTargetId = "CommentUpd" }, new { @class = "col-5 btn btn-secondary", onclick = "EditCommentShow();" })
+                @Ajax.ActionLink("Видалити", "DeleteConfirm", "Common", new { Id = Comment.Id }, new AjaxOptions { UpdateTargetId = "Delete" }, new { @class = "col-5 btn btn-danger", onclick = "DeleteShow();" })
+            </div>
+        }
+    </div>
+}

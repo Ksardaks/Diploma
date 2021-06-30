@@ -1,0 +1,66 @@
+﻿<div class="container col-12">
+    <div class="row jumbotron col-9 offset-1 mt-5">
+        @using (Html.BeginForm("AddPost", "Profile", FormMethod.Post, new { @class = "form-horizontal col-12 text-center", role = "form", enctype = "multipart/form-data" }))
+        {
+            <hr />
+            <div class="form-group mt-2">
+                <label class="col-md-12 control-label">Назва</label>
+                <div class="col-md-12">
+                    <input type="text" name="Title" class="form-control col-6 mr-auto ml-auto" />
+                </div>
+            </div>
+            <div class="form-group mt-2">
+                <label class="col-md-12 control-label">Текст</label>
+                <div class="col-md-12">
+                    <textarea type="text" name="Text" class="form-control col-6 mr-auto ml-auto"></textarea>
+                </div>
+            </div>
+            <div class="form-group mt-2">
+                <label class="col-md-12 control-label">Файли</label>
+                <table id="FilesChoose" class="table col-6 ml-auto mr-auto">
+                </table>
+                <input class="btn btn-outline-primary col-6" type="button" onclick="AddNewFile();" value="Додати новий файл" />
+            </div>
+
+            <input type="checkbox" hidden name="Published" value="false" id="Published" checked />
+
+            <div class="form-group mt-5">
+                <div class="col-md-12">
+                    <input type="submit" value="Зберегти" class="btn btn-outline-success col-6" />
+                </div>
+            </div>
+            <div class="form-group mt-2">
+                <div class="col-md-12">
+
+                    <input type="submit" value="Зберегти та опублікувати" onclick="document.getElementById('Published').setAttribute('value', 'true');" class="btn btn-outline-success col-6" />
+                </div>
+            </div>
+            <div class="form-group mt-2">
+                <div class="col-md-12">
+                    <a href="~/Profile/PostManager" class="btn btn-outline-primary col-6">Відмінити</a>
+                </div>
+            </div>
+        }
+    </div>
+</div>
+
+<script>
+
+    function Published() {
+
+        document.getElementById('Published').removeAttribute("checked");
+    }
+
+    function AddNewFile() {
+        var html = "<tr>"
+            + "<td>"
+            + "<input type=\"file\" id=\"Files\" name=\"Files\" class=\"form-control-file\"/>"
+            + "</td>"
+            + "<td>"
+            + "<input type=\"button\" onclick=\"$(this).parent().parent().remove(); \" value=\"Видалити\" class=\"btn btn-danger\"/>"
+            + "</td>"
+            + "</tr>";
+
+        $('#FilesChoose').append(html);
+    }
+</script>

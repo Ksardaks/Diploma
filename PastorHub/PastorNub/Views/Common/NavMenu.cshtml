@@ -1,0 +1,38 @@
+﻿@using Microsoft.AspNet.Identity;
+
+
+        @if (User.Identity.IsAuthenticated)
+        {
+            <a href="~/Home/Index" class="col-12 mt-3 HubBtn d-block">Домашня сторінка</a>
+            <a href="~/User/Subscriptions" class="col-12 mt-3 HubBtn d-block">Підписки</a>
+            <a href="~/Profile/Index/@(User.Identity.GetUserId())" class="col-12 mt-3 HubBtn d-block">Профіль</a>
+            if (User.IsInRole("pastor"))
+            {
+                <a href="~/Profile/PostManager" class="col-12 mt-3 HubBtn d-block">Менеджер постів</a>
+            }
+            <a class="col-12 mt-3 HubBtn d-block" href="/Common/Favorite/">Пости, які сподобалися</a>
+            <a href="~/Messages/Index" class="col-12 mt-3 HubBtn d-block">Повідомлення</a>
+        }
+        else
+        {
+            @Html.ActionLink("Виконати вхід", "Login", "Account", routeValues: null, htmlAttributes: new { id = "loginLink", @class = "col-12 mt-3 HubBtn d-block" })
+            @Html.ActionLink("Реєстрація", "Register", "Account", routeValues: null, htmlAttributes: new { id = "registerLink", @class = "col-12 mt-3 HubBtn d-block" })
+        }
+        <!--
+    <div class="jumbotron text-center col-2 offset-4">
+
+    </div>
+    <div class="jumbotron text-center col-2 offset-2">
+
+    </div>
+    <div class="jumbotron text-center col-2 offset-4" id="Recent">
+
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            $('#Recent').load('@Url.Action("Recent", "Common")');
+
+        });
+    </script>
+        -->

@@ -1,0 +1,40 @@
+﻿@model List<PastorNub.Models.ChatRoom>
+@using Microsoft.AspNet.Identity;
+
+<h4 class="mt-5">Нові повідомлення</h4>
+<div class="col-12 row ml-auto p-0 mr-auto" style="height: 280px; overflow-x: hidden;">
+    @if (Model.Count == 0)
+    {
+        <div class="col-12">Нових повідомлень немає</div>
+    }
+    @foreach (var i in Model)
+    {
+<div class="p-0 m-0 col-12">
+    <hr />
+    @if (i.FirstUser.Id == User.Identity.GetUserId())
+    {
+        <a href="~/Messages/Chat/@i.SecondUser.Id" style="position: absolute; top: 0; width: 100%; height: 100%; left: 0;"></a>
+        <p style="z-index: 2; position: relative; display: inline;" class="ml-2"><b>@i.SecondUser.UserName</b></p>
+    }
+    else
+    {
+        <a href="~/Messages/Chat/@i.FirstUser.Id" style="position: absolute; top: 0; width: 100%; height: 100%; left: 0;"></a>
+        <p style="z-index: 2; position: relative; display: inline;" class="ml-2"><b>@i.FirstUser.UserName</b></p>
+    }
+
+
+    <small class="ml-1">@i.ChatMessages.Last().Date.ToShortDateString()</small>
+    <p>
+        @if (i.ChatMessages.Last().Message.Length > 20)
+        {
+            @(new string(i.ChatMessages.Last().Message.Take(17).ToArray()) + " ...");
+        }
+        else
+        {
+            @(i.ChatMessages.Last().Message);
+        }
+    </p>
+    <hr />
+</div>
+    }
+</div>

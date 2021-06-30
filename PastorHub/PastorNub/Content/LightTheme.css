@@ -1,0 +1,191 @@
+﻿body {
+    background-color: #e7e6e1;
+    transition: 0.3s;
+}
+
+.jumbotron {
+    border-radius: 0px;
+    background-color: #f4f9f9;
+    color: #314e52;
+    transition: 0.3s;
+}
+
+.PostTable {
+    background-color: #f4f9f9;
+    color: #314e52;
+}
+
+.btn {
+    border-radius: 0px;
+    color: #314e52;
+    border-color: #314e52;
+    background-color: #e7e6e1;
+    transition: 0.5s;
+}
+
+.btn-outline-success:hover {
+    background-color: #fde8cd;
+    color: #314e52;
+    border-color: #314e52;
+}
+
+.btn-outline-success:active {
+    background-color: #314e52 !important;
+    color: #e7e6e1 !important;
+    border-color: #e7e6e1 !important;
+    outline: none !important;
+}
+
+.btn-outline-success:focus {
+    outline: 0 !important;
+    outline-color: transparent !important;
+    outline-width: 0 !important;
+    outline-style: none !important;
+    box-shadow: 0 0 0 0 rgba(0,123,255,0) !important;
+    outline: none !important;
+    border: 0;
+}
+
+.btn-outline-primary:hover {
+    background-color: #fde8cd;
+    color: #314e52;
+    border-color: #314e52;
+}
+
+.btn-outline-primary:active {
+    background-color: #314e52 !important;
+    color: #e7e6e1 !important;
+    border-color: #e7e6e1 !important;
+    outline: none !important;
+}
+
+.btn-outline-primary:focus {
+    outline: 0 !important;
+    outline-color: transparent !important;
+    outline-width: 0 !important;
+    outline-style: none !important;
+    box-shadow: 0 0 0 0 rgba(0,123,255,0) !important;
+    outline: none !important;
+    border: 0;
+}
+
+.btn-primary:hover {
+    background-color: #fde8cd;
+    color: #314e52;
+    border-color: #314e52;
+}
+
+.btn-primary:active {
+    background-color: #314e52 !important;
+    color: #e7e6e1 !important;
+    border-color: #e7e6e1 !important;
+    outline: none !important;
+}
+
+.btn-primary:focus {
+    outline: 0 !important;
+    outline-color: transparent !important;
+    outline-width: 0 !important;
+    outline-style: none !important;
+    box-shadow: 0 0 0 0 rgba(0,123,255,0) !important;
+    outline: none !important;
+    border: 0;
+}
+
+.btn-success:hover {
+    background-color: #fde8cd;
+    color: #314e52;
+    border-color: #314e52;
+}
+
+.btn-success:active {
+    background-color: #314e52 !important;
+    color: #e7e6e1 !important;
+    border-color: #e7e6e1 !important;
+    outline: none !important;
+}
+
+.btn-success:focus {
+    outline: 0 !important;
+    outline-color: transparent !important;
+    outline-width: 0 !important;
+    outline-style: none !important;
+    box-shadow: 0 0 0 0 rgba(0,123,255,0) !important;
+    outline: none !important;
+    border: 0;
+}
+
+.form-control {
+    background-color: #e7e6e1;
+    border-radius: 0px;
+    transition: 0.2s all ease-in-out;
+}
+
+.navbar {
+    border-radius: 0px !important;
+    background-color: #f4f9f9 !important;
+    color: #314e52 !important;
+    transition: 0.3s !important;
+}
+
+    .navbar :only-child {
+        color: #314e52 !important;
+    }
+
+    .navbar :first-child {
+        color: #314e52 !important;
+    }
+
+.HubBtn {
+    color: #314e52;
+    transition: 0.2s;
+    font-weight: bold;
+}
+
+    .HubBtn:hover {
+        cursor: pointer;
+        transform: scale(1.2);
+        text-decoration: none;
+    }
+
+div.scrollup {
+    position: fixed;
+    right: 20px;
+    bottom: 0px;
+    padding: 4px 10px;
+    font-size: 20px;
+    border-top-left-radius: 4px;
+    border-top-right-radius: 4px;
+    cursor: pointer;
+    display: none;
+    text-align: center;
+    transition: background-color 0.3s 0.0s linear, color 0.3s 0.0s linear;
+    border-radius: 0px;
+    background-color: #e7e6e1;
+    border: 1px black solid;
+    border-bottom: none; 
+    color: #314e52;
+}
+
+    div.scrollup:hover {
+        background-color: #314e52;
+        color: #f4f9f9 !important;
+    }
+
+.dropdown {
+    color: #314e52 !important;
+}
+
+.dropdown-menu {
+    border-radius: 0px;
+    background-color: #f4f9f9;
+}
+
+.dropdown-item {
+    color: #314e52 !important;
+}
+
+    .dropdown-item:hover {
+        background-color: #fde8cd;
+        color: #314e52 !important;
+    }

@@ -1,0 +1,90 @@
+﻿@model List<PastorNub.Models.ChatRoom>
+@using Microsoft.AspNet.Identity;
+@{
+    ViewBag.Title = "Index";
+}
+
+<div class="container-fluid position-absolute position-fixed row" id="menu"></div>
+<div class="container mt-5">
+    @if (Model.Count <= 0)
+    {
+        <div class="jumbotron row col-6 mr-auto ml-auto mt-5 pl-0 pr-0 text-center pt-4 pb-4" style="z-index: 1;">
+            <h3 class="ml-auto mr-auto">У вас немає чатів</h3>
+        </div>
+    }
+    else
+    {
+        foreach (var Room in Model)
+        {
+
+            <div class="jumbotron row col-6 mr-auto ml-auto mt-5 pl-0 pr-0 PostStyle pt-4 pb-4" style="z-index: 1;">
+                @if (Room.FirstUser.Id == User.Identity.GetUserId())
+                {
+                    <a href="~/Messages/Chat/@(Room.SecondUser.Id)" style="z-index: 4; width: 100%; height: 100%; display: block; position: absolute; top: 0;"></a>
+                }
+                else
+                {
+                    <a href="~/Messages/Chat/@(Room.FirstUser.Id)" style="z-index: 4; width: 100%; height: 100%; display: block; position: absolute; top: 0;"></a>
+                }
+                <div class="col-12 mt-0">
+                    @if (Room.FirstUser.Id == User.Identity.GetUserId())
+                    {
+                        <img height="50" width="50" style="display: inline;" src="~/Files/Avatar/@Room.SecondUser.Avatar" />
+                    }
+                    else
+                    {
+                        <img height="50" width="50" style="display: inline;" src="~/Files/Avatar/@Room.FirstUser.Avatar" />
+                    }
+
+                    <div class="d-inline">
+                        @if (Room.FirstUser.Id == User.Identity.GetUserId())
+                        {
+                            <a href="" style="z-index: 2; position: relative;" class="ml-2"><b>@Room.SecondUser.UserName</b></a>
+                        }
+                        else
+                        {
+                            <a href="" style="z-index: 2; position: relative;" class="ml-2"><b>@Room.FirstUser.UserName</b></a>
+                        }
+                    <div class="d-inline ml-5">
+                        @if (Room.ChatMessages.ToList().Count != 0)
+                        {
+                            if (Room.ChatMessages.ToList().Last().User.Id == User.Identity.GetUserId())
+                            {
+                                @("Ви: ")
+                                if (Room.ChatMessages.ToList().Last().Message.Length > 20)
+                                {
+                                    @Html.Raw(new string(Room.ChatMessages.ToList().Last().Message.Take(20).ToArray()) + "...");
+                                }
+                                else
+                                {
+                                    @Html.Raw(Room.ChatMessages.ToList().Last().Message)
+                                }
+                            }
+                            else
+                            {
+                                @(Room.ChatMessages.ToList().Last().User.UserName + " :")
+                                if (Room.ChatMessages.ToList().Last().Message.Length > 20)
+                                {
+                                    @Html.Raw(new string(Room.ChatMessages.Last().Message.Take(20).ToArray()) + "...");
+                                }
+                                else
+                                {
+                                    @Html.Raw(Room.ChatMessages.Last().Message)
+                                }
+                            }
+                        }
+                    </div>
+                    </div>
+                </div>
+            </div>
+        }
+    }
+
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        RenderMenu();
+    });
+</script>
+

@@ -1,0 +1,9 @@
+﻿@model PastorNub.Models.Comments
+
+@using (Ajax.BeginForm("EditComment", "Common", new AjaxOptions { HttpMethod="Post", OnSuccess = "$(\"#Comment\").load('/Common/Comment?Id=" + Model.Post.Id + "');" }))
+{
+    <input type="number" name="Id" value="@Model.Id" hidden/>
+    <textarea class="col-12 form-control" name="Text" rows="5">@Model.Text</textarea>
+    <input class="col-12 mt-3 btn btn-primary" value="Підтвердити" type="submit" onclick="EditCommentHide();"/>
+    <button class="col-12 mt-3 btn btn-primary" onclick="EditCommentHide();">Відмінити</button>
+}

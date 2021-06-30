@@ -1,0 +1,177 @@
+﻿@using Microsoft.AspNet.Identity;
+@model PastorNub.Models.ApplicationUser
+@{
+    ViewBag.Title = "Профіль користувача " + Model.UserName;
+    string UserId = User.Identity.GetUserId();
+}
+
+
+<div class="container-fluid position-absolute position-fixed row" id="menu"></div>
+
+<div class="container">
+    <div class="col-6 mr-auto ml-auto mt-5 jumbotron">
+        <div class="col-12">
+            <div class="col-12" style="margin-top: -40px;" id="Follow">
+                <img height="50" width="50" style="display: inline;" src="~/Files/Avatar/@Model.Avatar" />
+                <div class="d-inline">
+                    <span class=""><b>@Model.UserName</b></span>
+                </div>
+                <div class="col-5 offset-8 position-absolute">
+                    @if (User.Identity.IsAuthenticated)
+                    {
+                        if (User.Identity.GetUserId() == Model.Id)
+                        {
+                            if (Model.Confession == null)
+                            {
+                                <p style="margin-top: -20px;">Конфесія не вказана</p>
+                            }
+                            else
+                            {
+                                <a href="~/Channel/PostManager" class="btn btn-outline-success" style="margin-top: -60px; margin-right: 45px; margin-left: -45px;">Менеджер постів</a>
+                            }
+
+                        }
+                        else
+                        {
+                            if (Model.Pastor.Subscribers.Where(i => i.User.Id == UserId).Count() > 0)
+                            {
+                                @Ajax.ActionLink("Відписатися", "UnFollow", "Channel", new { Id = Model.Id }, new AjaxOptions { UpdateTargetId = "Follow" }, new { @class = "btn btn-outline-success", style = "margin-top: -60px; margin-right: 30px; margin-left: -5px;" })
+                            }
+                            else
+                            {
+                                @Ajax.ActionLink("Слідкувати", "Follow", "Channel", new { Id = Model.Id }, new AjaxOptions { UpdateTargetId = "Follow" }, new { @class = "btn btn-outline-success", style = "margin-top: -60px; margin-left: 3px; " })
+                            }
+
+                        }
+                    }
+                </div>
+                <div class="col-4 offset-1 position-absolute" style="margin-top: -15px;">
+                    <span class="">Слідкуючих: <span>@Model.Pastor.Subscribers.Count</span></span>
+                </div>
+            </div>
+            <div class="col-12">
+                <hr />
+            </div>
+            <div class="col-12">
+                <h6 class="text-center"><strong>Персональна інформація</strong></h6>
+                <div class="form-group">
+                    <label class="col-md-12 control-label"><strong>ПІП</strong></label>
+                    <div class="col-md-12">
+                        <label>@Model.Surname</label> <label>@Model.Name</label> <label>@Model.MiddleName</label>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="col-md-12 control-label"><strong>Освіта</strong></label>
+                    <div class="col-md-12">
+                        <label>
+                            @if (Model.Pastor != null)
+                            {@Model.Pastor.Education}
+                        </label>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="col-md-12 control-label"><strong>Конфесії</strong></label>
+                    <div class="col-md-12">
+                        @if (Model.UserConfessions != null)
+                        {
+                            foreach (var i in Model.UserConfessions)
+                            {
+                                <label class="d-block">
+                                    @(i.Confession.ConfessionName)
+                                </label>
+
+                            }
+                        }
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="col-md-12 control-label"><strong>Дата народження</strong></label>
+                    <div class="col-md-12">
+                        <label>@Model.Born</label>
+                    </div>
+                </div>
+                @if (User.Identity.GetUserId() == Model.Id)
+                {
+                    <div class="form-group">
+                        <div class="col-md-12">
+                            @Html.ActionLink("Редагувати", "Index", "Manage", routeValues: null, htmlAttributes: new { title = "Manage", @class = "btn btn-outline-primary" })
+                        </div>
+                    </div>
+                }
+                else if (User.Identity.IsAuthenticated && Model.Pastor.Subscribers.Where(i => i.User.Id == UserId).Count() > 0)
+                {
+                    <div class="form-group">
+                        <div class="col-md-12">
+                            <a href="~/Messages/Chat/@(Model.Id)" class="btn btn-outline-primary">Написати повідомлення</a>
+                        </div>
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+
+    <div id="Load" style="display: block;" class="col-6 ml-auto mr-auto jumbotron text-center ">
+        <p>Завантаження</p>
+        <img src="https://i.gifer.com/origin/4d/4dc11d17f5292fd463a60aa2bbb41f6a_w200.gif" width="30" />
+    </div>
+    <div id="Content">
+    </div>
+
+
+</div>
+
+<script>
+    //Функция отображения PopUp
+    function PopUpShow(id, fileId) {
+        $('body').css('overflow-y', 'hidden');
+        document.getElementById("File" + fileId).setAttribute("class", "active carousel-item");
+        document.getElementById("popup" + id).setAttribute("style", "display: block;");
+    }
+    //Функция скрытия PopUp
+    function PopUpHide(id) {
+        $(".carousel-item").removeClass("active");
+        $('body').css('overflow-y', 'scroll');
+        document.getElementById("popup" + id).setAttribute("style", "display: none;");
+    }
+
+    function ShowExtendedShow(id) {
+        $('body').css('overflow-y', 'hidden');
+        document.getElementById("ShowExtended" + id).setAttribute("style", "display: block;");
+    }
+
+    function ShowExtendedHide(id) {
+        $('body').css('overflow-y', 'scroll');
+        document.getElementById("ShowExtended" + id).setAttribute("style", "display: none;");
+    }
+
+    function LikeClick(id) {
+        document.getElementById('LikeBtn' + id).children[0].setAttribute("src", "https://img.icons8.com/color/30/000000/like--v3.png");
+    }
+
+    function MoreText(SpanId, LinkId) {
+        var span = document.getElementById("MoreTextFor" + SpanId);
+        var link = document.getElementById("ButtonMoreFor" + LinkId);
+        span.setAttribute("style", "display: inline;");
+        link.setAttribute("style", "display: none;");
+    }
+
+    function LessText(SpanId, LinkId) {
+        var span = document.getElementById("MoreTextFor" + SpanId);
+        var linkMore = document.getElementById("ButtonMoreFor" + LinkId);
+        span.setAttribute("style", "display: none;");
+        linkMore.setAttribute("style", "display: inline;");
+    }
+
+    function Loading() {
+        $('#Load').setAttribute("style", "display: block");
+    }
+
+     document.addEventListener('DOMContentLoaded', function () {
+        $('#Content').load('@Url.Action("PostList", "Common")?Id=@(Model.Id)', function () {
+            document.getElementById('Load').setAttribute('style', 'display: none;');
+        });
+        RenderMenu("@(Model.Id)");
+    });
+
+</script>
+

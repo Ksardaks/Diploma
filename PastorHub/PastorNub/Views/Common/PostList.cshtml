@@ -1,0 +1,308 @@
+﻿@model List<PastorNub.Models.Post>
+@using Microsoft.AspNet.Identity;
+@{
+    string[] ArrayOfWords;
+    string FileExtension = "";
+}
+<div class="scrollup">
+    <p>
+        <small>Вверх</small>
+        <i class="fa fa-chevron-up"></i>
+    </p>
+</div>
+@if (Model.Count <= 0)
+{
+    <div class="jumbotron row col-6 mr-auto ml-auto mt-5 pl-0 pr-0 text-center pt-4 pb-4" style="z-index: 1;">
+        <h3 class="ml-auto mr-auto col-12">Пости відсутні</h3>
+    </div>
+}
+@foreach (var Post in Model)
+{
+    if (Post.Published)
+    {
+        <div class="jumbotron row col-6 mr-auto ml-auto mt-5 pl-0 pr-0 PostStyle pt-4 pb-4" style="z-index: 1;">
+            <div style="position: absolute; height: 100%; z-index: 1; top: 0px;" onclick="ExtendedShow(@(Post.Id));" class="col-12">
+            </div>
+            <div class="col-12 mt-0">
+                @if (!Post.Global)
+                {
+                    <img height="50" width="50" style="display: inline;" src="~/Files/Avatar/@Post.Autor.Avatar" />
+                    <div class="d-inline">
+                        <a href="~/Profile/Index/@Post.Autor.Id" style="z-index: 2; position: relative;" class="ml-2"><b>@Post.Autor.UserName</b></a>
+                        <small class="ml-1">@Post.Date.ToString()</small>
+                        <small class="ml-1" style="color: darkgray;">@Post.Confession.ConfessionName</small>
+                    </div>
+                }
+                else
+                {
+                    <img height="50" width="50" style="display: inline;" src="~/Files/Avatar/@Post.Autor.Avatar" />
+                    <div class="d-inline">
+                        <span style="z-index: 2; position: relative;" class="ml-2"><b>@Post.Autor.UserName</b></span>
+                        <small class="ml-1">@Post.Date.ToString()</small>
+                    </div>
+                }
+            </div>
+            <div class="col-12">
+                <hr />
+            </div>
+            <h6 class="mt-4 col-12">@Post.Title</h6>
+            <asp:p style="word-break: break-word;" class="col-12">
+                @{ArrayOfWords = Post.Text.Split(new char[] { ' ' });}
+                @if (ArrayOfWords.Length > 30)
+                {
+                    for (int i = 0; i < 30; i++)
+                    {
+
+                        @Html.Raw(ArrayOfWords[i] + " ");
+                    }
+                    <span class="LinkBtn" id="@("ButtonMoreFor" + Post.Id)" style="z-index: 2; position: relative;" onclick="MoreText(@(Post.Id));">Розгорнути</span>
+                    <span style="display: none; z-index: 2;" id="@("MoreTextFor" + Post.Id)">
+                        @Html.DisplayText(" ")
+                        @for (int i = 30; i < ArrayOfWords.Length; i++)
+                        {
+                            @Html.Raw(ArrayOfWords[i] + " ");
+                        }
+                        <span class="LinkBtn" id="ButtonLess" style="z-index: 2; position: relative;" onclick="LessText(@(Post.Id));">Згорнути</span>
+                    </span>
+                }
+                else
+                {
+                    @Html.Raw(Post.Text);
+                }
+            </asp:p>
+            @if (Post.Files.Count > 0)
+            {
+                <div class="col-12">
+                    <hr />
+                </div>
+            }
+
+            <div class="PostFilePlace col-12">
+                @foreach (var File in Post.Files)
+                {
+                    FileExtension = Path.GetExtension("~/Files/Post/" + File.FileName);
+                    if (FileExtension == ".jpg" || FileExtension == ".png")
+                    {
+                        <img class="File" style="z-index: 2; position: relative; padding: 1px;" onclick="PopUpShow(@(Post.Id), @(File.Id))" src="~/Files/Post/@File.FileName" alt="Alternate Text" />
+                    }
+                    else if (FileExtension == ".mp4")
+                    {
+                        <img class="File" style="z-index: 2; position: relative; padding: 1px;" onclick="PopUpShow(@(Post.Id), @(File.Id))" src="~/Content/Images/Video.png" alt="Alternate Text" />
+                    }
+                }
+
+            </div>
+
+            <div class="col-12">
+                <hr />
+            </div>
+            <div class="col-12 position-relative d-inline" style="z-index: 3;">
+                <div id="LikePlace@(Post.Id)" class="d-inline mr-3">
+                    @if (Post.Favorites.Exists(i => i.User.Id == User.Identity.GetUserId()))
+                    {
+                        <a data-ajax="true" class="LikeBtn" data-ajax-mode="replace" data-ajax-update="#LikePlace@(Post.Id)" href="/Common/Dislike/@Post.Id"><img src="https://img.icons8.com/color/30/000000/like--v3.png" /></a>
+                        <small>@Post.Favorites.Count</small>
+                    }
+                    else
+                    {
+                        <a data-ajax="true" class="LikeBtn" data-ajax-mode="replace" data-ajax-update="#LikePlace@(Post.Id)" href="/Common/Like/@Post.Id"><img src="https://img.icons8.com/ios/30/000000/like--v1.png" /></a>
+                        <small>@Post.Favorites.Count</small>
+                    }
+                </div>
+                <div class="d-inline">
+                    <span class="LikeBtn" onclick="CommentsShow(@(Post.Id))"><img src="https://img.icons8.com/ios/30/000000/comments.png" /></span>
+                    <small>@Post.Comments.Count</small>
+                </div>
+            </div>
+        </div>
+
+        <div class="PopUp" id="@("popup" + Post.Id)">
+            <div class="col-8 ml-auto mr-auto h-100" style="display: flex; align-items: center;">
+                @if (Post.Files.Count > 1)
+                {
+                    <div class="col-1 p-0 w-100 h-75">
+                        <a class="carousel-control-prev w-100 h-100" href="#@("Carousel" + Post.Id)" style="z-index:99999; border-left: solid #d0e8f2 1px; border-right: solid #d0e8f2 1px;" role="button" data-slide="prev">
+                            <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                            <span class="sr-only">Previous</span>
+                        </a>
+                    </div>
+                }
+                <div class="@(Post.Files.Count > 1? "col-10" : "col-10 mr-auto ml-auto") p-0">
+                    <div id="@("Carousel" + Post.Id)" class="carousel slide col-10 offset-1" data-ride="@("Carousel" + Post.Id)">
+                        <div class="carousel-inner" style="transition: 0.5s; z-index:99999; display: flex; align-items: center;">
+                            @{ int index = 1; }
+                            @foreach (var File in Post.Files)
+                            {
+                                FileExtension = Path.GetExtension("~/Files/Post/" + File.FileName);
+                                if (FileExtension == ".jpg" || FileExtension == ".png")
+                                {
+                                    <div class="carousel-item" id="@("File" + File.Id)">
+                                        <img class="d-block h-auto col-12" src="~/Files/Post/@File.FileName" alt="Alternate Text" />
+                                    </div>
+                                }
+                                else if (FileExtension == ".mp4")
+                                {
+                                    <div class="carousel-item" id="@("File" + File.Id)">
+                                        <video class="d-block w-100" controls="controls">
+                                            <source class="d-block" src="~/Files/Post/@File.FileName" type="video/mp4" />
+                                        </video>
+                                    </div>
+                                }
+                                { index++; }
+
+                            }
+                        </div>
+                    </div>
+                </div>
+                @if (Post.Files.Count > 1)
+                {
+                    <div class="col-1 p-0 w-100 h-75">
+                        <a class="carousel-control-next w-100 h-100" href="#@("Carousel" + Post.Id)" style="z-index:999999; border-left: solid #d0e8f2 1px; border-right: solid #d0e8f2 1px;" role="button" data-slide="next">
+                            <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                            <span class="sr-only">Next</span>
+                        </a>
+                    </div>
+                }
+            </div>
+            <div class="BackgroundClose" onclick="PopUpHide(@(Post.Id))">
+            </div>
+        </div>
+    }
+}
+
+<div class="PopUp" id="ShowExtended">
+    <div class=" pt-5" style="z-index:999;">
+        <div style="position: fixed; height: 100%; z-index: 1; right:20px; top: 0px;" onclick="ExtendedHide();" class="col-12">
+        </div>
+        <div class="col-8 offset-2 jumbotron mt-5" style="z-index: 999; font-size: 20px;" id="Extended">
+
+        </div>
+    </div>
+</div>
+
+<div class="PopUp" id="ShowComments">
+    <div class=" pt-5" style="z-index:999;">
+        <div style="position: fixed; height: 100%; z-index: 1; right:20px; top: 0px;" onclick="CommentsHide()" class="col-12">
+        </div>
+        <div class="col-8 offset-2 jumbotron mt-5" id="Comments" style="z-index: 999; font-size: 20px;">
+
+        </div>
+    </div>
+</div>
+
+<div class="PopUp" id="EditComment">
+    <div style="position: fixed; height: 100%; z-index: 1; right:20px; " onclick="EditCommentHide();" class="col-12">
+    </div>
+    <div class="col-7 ml-auto mr-auto jumbotron" id="CommentUpd" style=" z-index: 50; margin-top: 350px;">
+
+    </div>
+</div>
+
+<div class="PopUp" id="DeleteConfirm">
+    <div style="position: fixed; height: 100%; z-index: 1; right:20px; " onclick="DeleteHide();" class="col-12">
+    </div>
+    <div class="col-7 ml-auto mr-auto text-center jumbotron" id="Delete" style=" z-index: 50; margin-top: 330px;">
+
+    </div>
+</div>
+
+<script>
+    function ClearTextArea() {
+        document.getElementById("TextArea").value = "";
+    }
+
+    //Функция отображения PopUp
+    function PopUpShow(id, fileId) {
+        $('body').css('overflow-y', 'hidden');
+        document.getElementById("File" + fileId).setAttribute("class", "active carousel-item");
+        document.getElementById("popup" + id).setAttribute("style", "display: block;");
+    }
+    //Функция скрытия PopUp
+    function PopUpHide(id) {
+        $(".carousel-item").removeClass("active");
+        $('body').css('overflow-y', 'scroll');
+        document.getElementById("popup" + id).setAttribute("style", "display: none;");
+    }
+
+    function ExtendedShow(Id) {
+        $("#Extended").load('@Url.Action("ShowExtended", "Common")?Id=' + Id);
+        $('body').css('overflow-y', 'hidden');
+        document.getElementById("ShowExtended").setAttribute("style", "display: block;");
+        $("#ShowExtended").scrollTop(0);
+    }
+
+    function ExtendedHide() {
+        $('body').css('overflow-y', 'scroll');
+        document.getElementById("ShowExtended").setAttribute("style", "display: none;");
+    }
+
+    function CommentsShow(Id) {
+        $("#Comments").load('@Url.Action("ShowComments", "Common")?Id=' + Id);
+        $('body').css('overflow-y', 'hidden');
+        document.getElementById("ShowComments").setAttribute("style", "display: block;");
+        $("#ShowComments").scrollTop(0);
+    }
+
+    function CommentsHide() {
+        $('body').css('overflow-y', 'scroll');
+        document.getElementById("ShowComments").setAttribute("style", "display: none;");
+    }
+
+    function EditCommentShow() {
+        ClearCommentTextArea();
+        document.getElementById("EditComment").setAttribute("style", "display: block;");
+    }
+
+    function EditCommentHide() {
+        document.getElementById("EditComment").setAttribute("style", "display: none;");
+    }
+
+    function DeleteShow() {
+        document.getElementById("DeleteConfirm").setAttribute("style", "display: block;");
+    }
+
+    function DeleteHide() {
+        document.getElementById("DeleteConfirm").setAttribute("style", "display: none;");
+    }
+
+    function EditCommentHide() {
+        document.getElementById("EditComment").setAttribute("style", "display: none;");
+    }
+
+    function MoreText(Id) {
+        var span = document.getElementById("MoreTextFor" + Id);
+        var link = document.getElementById("ButtonMoreFor" + Id);
+        span.setAttribute("style", "display: inline; z-index: 4; position: relative;");
+        link.setAttribute("style", "display: none; z-index: 4; position: relative;");
+    }
+
+    function LessText(Id) {
+        var span = document.getElementById("MoreTextFor" + Id);
+        var linkMore = document.getElementById("ButtonMoreFor" + Id);
+        span.setAttribute("style", "display: none; z-index: 4; position: relative;");
+        linkMore.setAttribute("style", "display: inline; z-index: 4; position: relative;");
+    }
+
+    $(function () {
+        // при нажатии на кнопку scrollup
+        $('.scrollup').click(function () {
+            // переместиться в верхнюю часть страницы
+            $("html, body").animate({
+                scrollTop: 0
+            }, 1000);
+        })
+    })
+    // при прокрутке окна (window)
+    $(window).scroll(function () {
+        // если пользователь прокрутил страницу более чем на 200px
+        if ($(this).scrollTop() > 200) {
+            // то сделать кнопку scrollup видимой
+            $('.scrollup').fadeIn();
+        }
+        // иначе скрыть кнопку scrollup
+        else {
+            $('.scrollup').fadeOut();
+        }
+    });
+</script>
+

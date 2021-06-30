@@ -1,0 +1,91 @@
+﻿@model PastorNub.Models.Post
+@using Microsoft.AspNet.Identity;
+@{
+    string FileExtension = "";
+}
+
+
+<div class="col-12" style="margin-top: -40px;">
+    <img height="50" width="50" style="display: inline;" src="~/Files/Avatar/@Model.Autor.Avatar" />
+    <div class="d-inline">
+        <a href="~/Channel/Index/@Model.Autor.Id" style="z-index: 2; position: relative;" class="ml-2"><b>@Model.Autor.UserName</b></a>
+        <small class="ml-1">@Model.Date.ToString()</small>
+        <small class="ml-1" style="color: darkgray;">@Model.Confession.ConfessionName</small>
+    </div>
+    <div class="d-inline">
+
+    </div>
+</div>
+<div class="col-12">
+    <hr />
+</div>
+<h2 class="mt-4 col-12">@Model.Title</h2>
+<p style="word-break: break-word;" class="col-10 mt-5 offset-1 text-left">
+    @Html.Raw(Model.Text);
+</p>
+@if (Model.Files.Count > 0)
+{
+    <div class="col-12">
+        <hr />
+    </div>
+}
+<div class="col-12">
+    @foreach (var File in Model.Files)
+    {
+        FileExtension = Path.GetExtension("~/Files/Post/" + File.FileName);
+        if (FileExtension == ".jpg" || FileExtension == ".png")
+        {
+            <img class="col-6 offset-3" style=" padding: 1px;" src="~/Files/Post/@File.FileName" alt="Alternate Text" />
+        }
+        else if (FileExtension == ".mp4")
+        {
+            <video class="col-6 w-auto offset-3" controls="controls">
+                <source src="~/Files/Post/@File.FileName" type="video/mp4" />
+            </video>
+        }
+    }
+
+</div>
+<div class="col-12">
+    <hr />
+</div>
+
+<h4 class="mt-4 col-12">Коментарі (@Model.Comments.Count)</h4>
+<div class="col-12 mt-5">
+    @using (Ajax.BeginForm("Comment", "Common", new AjaxOptions { UpdateTargetId = "Comment", OnSuccess = "document.getElementById(\"TextArea\").html = \"\";" }, new { @class = "col-12" }))
+    {
+        <div class="row">
+            <input hidden name="Id" value="@Model.Id" />
+            <textarea name="Text" class="form-control col-10" rows="5"></textarea>
+            <input type="submit" class="col-2 btn btn-secondary" value="Коментувати" />
+        </div>
+    }
+</div>
+<div class="col-12">
+    <hr />
+</div>
+<div class="col-12 mt-5" id="Comment">
+    @foreach (var Comment in Model.Comments.OrderByDescending(i => i.Date))
+    {
+        <div class="row col-12 mt-5">
+            <div>
+                <img height="50" width="50" style="display: inline;" src="https://vk-wiki.ru/wp-content/uploads/2019/06/user-1.png" />
+            </div>
+            <div class="col-11">
+                <strong>@Comment.Autor.UserName</strong>
+                <small class="ml-1">@Comment.Date.ToShortDateString()</small>
+                <div class="col-12">
+                    @Html.Raw(Comment.Text)
+                </div>
+            </div>
+            @if (Comment.Autor.Id == User.Identity.GetUserId())
+            {
+                <div class="col-6">
+                    @Ajax.ActionLink("Редагувати", "EditComment", "Common", new { Id = Comment.Id }, new AjaxOptions { UpdateTargetId = "CommentUpd" }, new { @class = "col-5 btn btn-secondary", onclick = "EditCommentShow();" })
+                    @Ajax.ActionLink("Видалити", "DeleteConfirm", "Common", new { Id = Comment.Id }, new AjaxOptions { UpdateTargetId = "Delete" }, new { @class = "col-5 btn btn-danger", onclick = "DeleteShow();" })
+                </div>
+            }
+        </div>
+    }
+
+</div>

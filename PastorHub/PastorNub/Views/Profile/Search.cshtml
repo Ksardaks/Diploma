@@ -1,0 +1,47 @@
+﻿@model List<PastorNub.Models.Post>
+
+@foreach (var i in Model)
+{
+    <div class="mt-2 hover row" style="border-bottom: 1px solid darkgray;height: 50px; display: flex; align-items: center;" onmouseout="Hide(@(i.Id))" onmouseover="Show(@(i.Id))">
+        <label class="text-center col-4 mt-auto mb-auto hover-ch" style="border-right: 1px solid darkgray;">
+            @if (i.Title.Length > 20)
+            {
+                @(new string(i.Title.Take(20).ToArray()) + " ...")
+            }
+            else
+            {
+                @(i.Title)
+            }
+        </label>
+        <label class="text-center col-4 mt-auto mb-auto hover-ch" style="border-right: 1px solid darkgray;">@i.Date</label>
+        <label class="text-center col-4 mt-auto mb-auto hover-ch">@(i.Published ? "Так" : "Ні")</label>
+
+        <div style="position:absolute;" class="col-12 mt-auto mb-auto" hidden id="Show@(i.Id)">
+            <form class="col-3" style=" display: inline;" action="/Profile/EditPost" data-ajax="true" data-ajax-mode="replase" data-ajax-update="#AddNewPost" method="get">
+                <input type="number" value="@i.Id" name="Id" hidden />
+                <input class="col-3 btn-success btn" type="submit" value="Редагувати" onclick="CloseControls();" />
+                @if (i.Published)
+                {
+                    @Ajax.ActionLink("Зняти з публікації", "DePublished", "Profile", new { Id = i.Id }, new AjaxOptions { UpdateTargetId = "", OnSuccess = "setTimeout(location.reload(), 100);" }, new { @class = "col-3 btn btn-primary", style = "max-width: 200px;" })
+                }
+                else
+                {
+                    @Ajax.ActionLink("Опоблікувати", "Published", "Profile", new { Id = i.Id }, new AjaxOptions { UpdateTargetId = "", OnSuccess = "setTimeout(location.reload(), 100);" }, new { @class = "col-3 btn btn-primary" })
+                }
+                <input type="button" class="col-3 btn btn-danger" style="z-index: 999;" onclick="PopUpShow(@(i.Id))" value="Видалити" />
+            </form>
+        </div>
+    </div>
+
+    <div class="PopUp" id="@("popup" + i.Id)">
+        <div style="position: absolute; z-index: 99999; top: 30%;" class="container">
+            <div class="col-12 offset-4 jumbotron">
+                <p>Ви дійсно бажаєте видалити пост "@(i.Title)"?</p>
+                @Ajax.ActionLink("Так", "DeletePost", "Profile", new { Id = i.Id }, new AjaxOptions { UpdateTargetId = "", OnSuccess = "location.reload();" }, new { @class = "btn btn-outline-danger", onclick = "PopUpHide(" + i.Id + "); location.reload();" })
+                <button onclick="PopUpHide(@(i.Id))" class="btn btn-outline-success">Ні</button>
+            </div>
+        </div>
+        <div class="BackgroundClose" onclick="PopUpHide(@(i.Id))">
+        </div>
+    </div>
+}

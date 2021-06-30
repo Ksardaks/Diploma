@@ -1,0 +1,91 @@
+﻿@model List<PastorNub.Models.Confession>
+@{
+    ViewBag.Title = "Менеджер конфесій";
+}
+<div class="container-fluid pl-0">
+    <div class="row">
+        <div style="border-right: 2px solid gray; position: relative; z-index: 999;" class="col-4 position-fixed PostTable">
+            <div class="SearchBloc col-12 row ml-auto mr-auto">
+                <input type="text" class="form-control mt-5 col-6" />
+                <button class="btn-outline-primary mt-5 btn offset-1 col-5">Пошук</button>
+            </div>
+            <form class="col-12 " action="/Administrator/CreateConfession" data-ajax="true" data-ajax-mode="replase" data-ajax-update="#AddNewPost" method="get">
+                <input class="col-12 btn-outline-success mt-3 btn col-11 mb-2" type="submit" value="Створити нову конфесію" onclick="CloseControls();" />
+            </form>
+            <div style="" class="col-12 text-center">
+
+                <div class="col-12 row">
+                    <label class="col-12"><strong>Назва</strong></label>
+                </div>
+
+                <div style="height: 715px; overflow-y: scroll; overflow-x: hidden;">
+                    @foreach (var i in Model)
+                    {
+                        <div class="mt-2 hover row" style="border-bottom: 1px solid darkgray;height: 50px; display: flex; align-items: center;" onmouseout="Hide(@(i.Id))" onmouseover="Show(@(i.Id))">
+                            <label class="text-center col-12 mt-auto mb-auto hover-ch" style="border-right: 1px solid darkgray;">@i.ConfessionName</label>
+
+                            <div style="position:absolute;" class="col-12 mt-auto mb-auto" hidden id="Show@(i.Id)">
+                                <form class="col-3" style=" display: inline;" action="/Administrator/EditConfession" data-ajax="true" data-ajax-mode="replase" data-ajax-update="#AddNewPost" method="get">
+                                    <input type="number" value="@i.Id" name="Id" hidden />
+                                    <input class="col-3 btn-success btn" type="submit" value="Редагувати" onclick="CloseControls()" />
+                                    <input type="button" class="col-3 btn btn-danger" style="z-index: 999;" onclick="PopUpShow(@(i.Id))" value="Видалити" />
+                                </form>
+                            </div>
+                        </div>
+
+                        <div class="PopUp" id="@("popup" + i.Id)">
+                            <div style="position: absolute; z-index: 99999; top: 30%;" class="container">
+                                <div class="col-12 offset-4 jumbotron">
+                                    <p>Ви дійсно бажаєте видалити конфесію "@(i.ConfessionName)"?</p>
+                                    @Ajax.ActionLink("Так", "DeleteConfession", "Administrator", new { Id = i.Id }, new AjaxOptions { UpdateTargetId = "", OnSuccess = "location.reload();" }, new { @class = "btn btn-outline-danger", onclick = "PopUpHide(" + i.Id + "); location.reload();" })
+                                    <button onclick="PopUpHide(@(i.Id))" class="btn btn-outline-success">Ні</button>
+                                </div>
+                            </div>
+                            <div class="BackgroundClose" onclick="PopUpHide(@(i.Id))">
+                            </div>
+                        </div>
+                    }
+                </div>
+
+            </div>
+
+        </div>
+
+        <div class="col-4 h-100 w-100"></div>
+
+        <div class="col-8">
+            <div id="AddNewPost">
+
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+
+    function Show(Id) {
+        document.getElementById('Show' + Id).removeAttribute("hidden");
+    }
+    function Hide(Id) {
+        document.getElementById('Show' + Id).setAttribute("hidden", "");
+    }
+
+    //Функция отображения PopUp
+    function PopUpShow(Id) {
+        document.getElementById('Show' + Id).setAttribute("hidden", "");
+        document.getElementById("popup" + Id).setAttribute("style", "display: block;");
+    }
+    //Функция скрытия PopUp
+    function PopUpHide(Id) {
+        document.getElementById("popup" + Id).setAttribute("style", "display: none;");
+    }
+
+    function CloseControls() {
+        document.getElementById("closeControl").removeAttribute("hidden");
+    }
+    //Функция скрытия PopUp
+    function OpenControls() {
+        document.getElementById("closeControl").setAttribute("hidden", "");
+    }
+
+</script>

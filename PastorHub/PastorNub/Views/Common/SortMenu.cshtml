@@ -1,0 +1,35 @@
+﻿@model char[]
+
+        <div class="col-12 p-0 row ml-auto mr-auto">
+            <b class="ml-auto mr-auto">
+                Пошук
+            </b>
+            <div class="col-12 mt-3">
+                @using (Ajax.BeginForm("Search", "Common", new AjaxOptions { UpdateTargetId = "Content", LoadingElementId = "Load" }))
+                {
+                    <div class="row">
+                        <input name="Id" class="form-control col-8" hidden value="@(new String(Model))" />
+                        <input type="text" name="Text" class="form-control col-8" />
+                        <input class="col-4 btn btn-outline-success" type="submit" value="Пошук" />
+                    </div>
+                }
+            </div>
+            <b class="ml-auto mt-5 mr-auto">
+                Фільтрувати за:
+            </b>
+            <div class="col-12 mt-3 text-center">
+                <label class="col-12 mr-1">Назвою</label>
+                @Ajax.ActionLink("А - я", "PostList", "Common", new { Id = new string(Model), SortBy = "Name" }, new AjaxOptions { UpdateTargetId = "Content", LoadingElementId = "Load" }, new { @class = "HubBtn col-5" })
+                @Ajax.ActionLink("Я - а", "PostList", "Common", new { Id = new string(Model), SortBy = "Name", Ascending = false }, new AjaxOptions { UpdateTargetId = "Content", LoadingElementId = "Load" }, new { @class = "HubBtn col-5" })
+            </div>
+            <div class="col-12 mt-3 text-center">
+                <label class="col-12 mr-1">Датою</label>
+                @Ajax.ActionLink("Старіші", "PostList", "Common", new { Id = new string(Model), SortBy = "Date" }, new AjaxOptions { UpdateTargetId = "Content", LoadingElementId = "Load" }, new { @class = "HubBtn col-5" })
+                @Ajax.ActionLink("Новіші", "PostList", "Common", new { Id = new string(Model), SortBy = "Date", Ascending = false }, new AjaxOptions { UpdateTargetId = "Content", LoadingElementId = "Load" }, new { @class = "HubBtn col-5" })
+            </div>
+            <div class="col-12 mt-3 text-center">
+                <label class="col-12 mr-1">Вподобанями</label>
+                @Ajax.ActionLink("Зростання", "PostList", "Common", new { Id = new string(Model), SortBy = "Fav", Ascending = false }, new AjaxOptions { UpdateTargetId = "Content", LoadingElementId = "Load" }, new { @class = "HubBtn col-5 p-1" })
+                @Ajax.ActionLink("Спадання", "PostList", "Common", new { Id = new string(Model), SortBy = "Fav" }, new AjaxOptions { UpdateTargetId = "Content", LoadingElementId = "Load" }, new { @class = "HubBtn col-5 p-1" })
+            </div>
+        </div>

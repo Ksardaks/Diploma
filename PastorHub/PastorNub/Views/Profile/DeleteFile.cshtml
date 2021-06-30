@@ -1,0 +1,9 @@
+﻿@model PastorNub.Models.Post
+
+@foreach (var i in Model.Files)
+{
+    <tr>
+        <td><img src="~/Files/Post/@(i.FileName)" alt="Alternate Text" class="col-12" /></td>
+        <td>@Ajax.ActionLink("Видалити", "DeleteFile", "Profile", new { FileId = i.Id, PostId = Model.Id }, new AjaxOptions { UpdateTargetId = "ExistingFiles" }, new { @class = "btn btn-outline-danger" })</td>
+    </tr>
+}

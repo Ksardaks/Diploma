@@ -1,0 +1,43 @@
+﻿@model PastorNub.Models.Post
+@using Microsoft.AspNet.Identity;
+
+<h4 class="mt-4 col-12">Коментарі (@Model.Comments.Count)</h4>
+<div class="col-12 mt-5">
+    @using (Ajax.BeginForm("Comment", "Common", new AjaxOptions { UpdateTargetId = "Comment", OnSuccess = "document.getElementById(\"TextArea\").html = \"\";" }, new { @class = "col-12" }))
+    {
+        <div class="row">
+            <input hidden name="Id" value="@Model.Id" />
+            <textarea name="Text" class="form-control col-10" rows="5"></textarea>
+            <input type="submit" class="col-2 btn btn-secondary" value="Коментувати" />
+        </div>
+    }
+</div>
+<div class="col-12">
+    <hr />
+</div>
+<div class="col-12 mt-5" id="Comment">
+    @foreach (var Comment in Model.Comments.OrderByDescending(i => i.Date))
+    {
+        <div class="row col-12 mt-5">
+            <div>
+                <img height="50" width="50" style="display: inline;" src="~/Files/Avatar/@Comment.Autor.Avatar" />
+            </div>
+            <div class="col-11">
+                <strong>@Comment.Autor.UserName</strong>
+                <small class="ml-1">@Comment.Date.ToShortDateString()</small>
+                <div class="col-12">
+                    @Html.Raw(Comment.Text)
+                </div>
+            </div>
+            @if (Comment.Autor.Id == User.Identity.GetUserId())
+            {
+                <div class="col-6">
+                    @Ajax.ActionLink("Редагувати", "EditComment", "Common", new { Id = Comment.Id }, new AjaxOptions { UpdateTargetId = "CommentUpd" }, new { @class = "col-5 btn btn-secondary", onclick = "EditCommentShow();" })
+                    @Ajax.ActionLink("Видалити", "DeleteConfirm", "Common", new { Id = Comment.Id }, new AjaxOptions { UpdateTargetId = "Delete" }, new { @class = "col-5 btn btn-danger", onclick = "DeleteShow();" })
+                </div>
+            }
+        </div>
+
+    }
+
+</div>

@@ -1,0 +1,39 @@
+﻿@using Microsoft.AspNet.Identity
+@using PastorNub.Models
+@{ 
+    ApplicationDbContext Context = new ApplicationDbContext();
+    ApplicationUser CurrentUser = Context.Users.Find(User.Identity.GetUserId());
+}
+    <ul class="navbar-nav navbar-right" style="margin-right: 200px">
+        <li class="nav-item "><button class="btn mr-2 btn-outline-success pt-0 pb-0" onclick="Dark();"><i class="fas fa-moon"></i></button></li>
+        <li class="nav-item "><button class="btn btn-outline-success pt-0 pb-0" onclick="Light();"><i class="fas fa-sun h-100"></i></button></li>
+    </ul>
+        @if (Request.IsAuthenticated)
+        {
+            using (Html.BeginForm("LogOff", "Account", FormMethod.Post, new { id = "logoutForm", @class = "form-inline my-2 my-lg-0" }))
+            {
+                @Html.AntiForgeryToken()
+
+                <ul class="navbar-nav navbar-right">
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                            @User.Identity.GetUserName()
+                            <img height="30" width="30" src="~/Files/Avatar/@CurrentUser.Avatar" />
+                        </a>
+                        <div class="dropdown-menu dropdown-menu-right" aria-labelledby="navbarDropdown">
+                            @Html.ActionLink("Налаштування", "Index", "Manage", routeValues: null, htmlAttributes: new { title = "Manage", @class = "dropdown-item" })
+                            <a class="dropdown-item" href="javascript:document.getElementById('logoutForm').submit()">Вийти</a>
+                        </div>
+
+
+                    </li>
+                </ul>
+            }
+        }
+        else
+        {
+            <ul class="navbar-nav navbar-right">
+                <li class="nav-item">@Html.ActionLink("Реєстрація", "Register", "Account", routeValues: null, htmlAttributes: new { id = "registerLink", @class = "nav-link" })</li>
+                <li class="nav-item">@Html.ActionLink("Виконати вхід", "Login", "Account", routeValues: null, htmlAttributes: new { id = "loginLink", @class = "nav-link" })</li>
+            </ul>
+        }

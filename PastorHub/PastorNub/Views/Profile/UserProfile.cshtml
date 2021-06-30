@@ -1,0 +1,84 @@
+﻿@using Microsoft.AspNet.Identity;
+@using PastorNub.Models;
+@model PastorNub.Models.ApplicationUser
+@{
+    ViewBag.Title = "Профіль користувача " + Model.UserName;
+    string UserId = User.Identity.GetUserId();
+}
+
+
+<div class="container-fluid position-absolute position-fixed row" id="menu"></div>
+
+<div class="container">
+    <div class="col-6 mr-auto ml-auto mt-5 jumbotron">
+        <div class="col-12">
+            <div class="col-12" style="margin-top: -40px;" id="Follow">
+                <img height="50" width="50" style="display: inline;" src="~/Files/Avatar/@Model.Avatar" />
+                <div class="d-inline">
+                    <span class=""><b>@Model.UserName</b></span>
+                </div>
+            </div>
+            <div class="col-12">
+                <hr />
+            </div>
+            <div class="col-12">
+                <h6 class="text-center"><strong>Персональна інформація</strong></h6>
+                <div class="form-group">
+                    <label class="col-md-12 control-label"><strong>ПІП</strong></label>
+                    <div class="col-md-12">
+                        <label>@Model.Surname</label> <label>@Model.Name</label> <label>@Model.MiddleName</label>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="col-md-12 control-label"><strong>Конфесії</strong></label>
+                    <div class="col-md-12">
+                        @if (Model.UserConfessions != null)
+                        {
+                            foreach (var i in Model.UserConfessions)
+                            {
+                                <label class="d-block">
+                                    @(i.Confession.ConfessionName)
+                                </label>
+
+                            }
+                        }
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="col-md-12 control-label"><strong>Дата народження</strong></label>
+                    <div class="col-md-12">
+                        <label>@Model.Born</label>
+                    </div>
+                </div>
+                @if (User.Identity.GetUserId() == Model.Id)
+                {
+                    <div class="form-group">
+                        <div class="col-md-12">
+                            @Html.ActionLink("Редагувати", "Index", "Manage", routeValues: null, htmlAttributes: new { title = "Manage", @class = "btn btn-outline-primary" })
+                        </div>
+                    </div>
+                }
+                else if (User.Identity.IsAuthenticated && Model.Pastor.Subscribers.Where(i => i.User.Id == UserId).Count() > 0)
+                {
+                    <div class="form-group">
+                        <div class="col-md-12">
+                            <a href="~/Messages/Chat/@(Model.Id)" class="btn btn-outline-primary">Написати повідомлення</a>
+                        </div>
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+
+
+
+</div>
+
+<script>
+
+    document.addEventListener('DOMContentLoaded', function () {
+        RenderMenu("");
+    });
+
+</script>
+

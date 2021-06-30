@@ -1,0 +1,56 @@
+﻿@using PastorNub.Models
+@model LoginViewModel
+@{
+    ViewBag.Title = "Виконати вхід";
+}
+
+<div class="container">
+    <div class="row jumbotron mt-5 LoginStyle">
+        @using (Html.BeginForm("Login", "Account", new { ReturnUrl = ViewBag.ReturnUrl }, FormMethod.Post, new { @class = "form-horizontal col-12 text-center", role = "form", novalidate = "", autocomplete = "off" }))
+        {
+            @Html.AntiForgeryToken()
+            <h2>@ViewBag.Title.</h2>
+            <h4>
+                Використовуйте для входу локальну обліковий запис.
+            </h4>
+            <hr />
+            @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+            <div class="form-group">
+                @Html.LabelFor(m => m.Login, new { @class = "col-md-12 control-label" })
+                <div class="col-md-12">
+                    @Html.TextBoxFor(m => m.Login, new { @class = "form-control col-4 mr-auto ml-auto", @readonly = "", onfocus = "this.removeAttribute('readonly')" })
+                    @Html.ValidationMessageFor(m => m.Login, "", new { @class = "text-danger" })
+                </div>
+            </div>
+            <div class="form-group">
+                @Html.LabelFor(m => m.Password, new { @class = "col-md-12 control-label" })
+                <div class="col-md-12">
+                    @Html.PasswordFor(m => m.Password, new { @class = "form-control col-4 mr-auto ml-auto", @readonly = "", onfocus = "this.removeAttribute('readonly')" })
+                    @Html.ValidationMessageFor(m => m.Password, "", new { @class = "text-danger" })
+                </div>
+            </div>
+            <div class="form-group">
+                <div class=" col-md-12">
+                    <div class="checkbox">
+                        @Html.CheckBoxFor(m => m.RememberMe)
+                        @Html.LabelFor(m => m.RememberMe)
+                    </div>
+                </div>
+            </div>
+            <div class="form-group">
+                <div class="col-md-12">
+                    <input type="submit" value="Виконати вхід" class="btn btn-outline-success col-4" />
+                </div>
+            </div>
+            @* Включите, когда будет включено подтверждение учетной записи для функции сброса пароля
+                <p>
+                    @Html.ActionLink("Забыли пароль?", "ForgotPassword")
+                </p>*@
+        }
+    </div>
+</div>
+
+
+@section Scripts {
+    @Scripts.Render("~/bundles/jqueryval")
+}
