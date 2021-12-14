@@ -29,7 +29,7 @@
                             <tr>
 
                                 <td><img src="~/Files/Post/@(i.FileName)" alt="Alternate Text" class="col-12" /></td>
-                                <td>@Ajax.ActionLink("Видалити", "DeleteFile", "Profile", new { FileId = i.Id, PostId = Model.Id }, new AjaxOptions { UpdateTargetId = "ExistingFiles" }, new { @class = "btn btn-outline-danger" })</td>
+                                <td>@Ajax.ActionLink("Видалити", "DeleteFile", "Profile", new { FileId = i.Id, PostId = Model.Id }, new AjaxOptions { }, new { @class = "btn btn-outline-danger" })</td>
 
                             </tr>
                         }
@@ -48,7 +48,7 @@
                 </div>
             </div>
             <div class="form-group mt-2">
-                <div class="col-md-12">
+                <div class="col-md-12"> 
                     <a href="~/Profile/PostManager" class="btn btn-outline-primary col-6">Відмінити</a>
                 </div>
             </div>

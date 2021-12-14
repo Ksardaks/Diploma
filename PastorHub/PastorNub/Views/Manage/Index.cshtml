@@ -60,7 +60,7 @@
                 }
 
                 @Html.ActionLink("Редагувати персональну інформацю", "ChangePersonalInfo", "Manage", new { @class = "btn btn-outline-primary col-9" })
-                @if (Model.UserConfessions.Count < 4)
+                @if (Model.UserConfessions.Count < 4 && !User.IsInRole("administrator"))
                 {
                     @Html.ActionLink("Редагувати конфесії", "SelectConfessions", "Manage", new { @class = "btn mt-2 btn-outline-primary col-9" })
                 }

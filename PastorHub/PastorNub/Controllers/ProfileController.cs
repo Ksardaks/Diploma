@@ -1,5 +1,4 @@
 ﻿using Microsoft.AspNet.Identity;
-using Microsoft.AspNet.Identity.EntityFramework;
 using PastorNub.Models;
 using System;
 using System.Collections.Generic;
@@ -7,7 +6,6 @@ using System.IO;
 using System.Linq;
 using System.Web;
 using System.Web.Mvc;
-using System.Web.Security;
 
 namespace PastorNub.Controllers
 {
@@ -17,7 +15,7 @@ namespace PastorNub.Controllers
         {
             ApplicationDbContext Context = new ApplicationDbContext();
             ApplicationUser User = Context.Users.Find(Id);
-            if(User != null)
+            if (User != null)
             {
                 if (User.Pastor != null)
                 {
@@ -27,7 +25,7 @@ namespace PastorNub.Controllers
                 {
                     return View("UserProfile", User);
                 }
-            }    
+            }
             return HttpNotFound();
         }
 
@@ -51,7 +49,7 @@ namespace PastorNub.Controllers
         {
             ApplicationDbContext Context = new ApplicationDbContext();
             ApplicationUser CurrentUser = Context.Users.Find(User.Identity.GetUserId());
-            if(CurrentUser.Confession != null)
+            if (CurrentUser.Confession != null || User.IsInRole("administrator"))
             {
                 return View(Context.Posts.Where(i => i.Autor.Id == CurrentUser.Id).ToList());
             }
@@ -105,37 +103,60 @@ namespace PastorNub.Controllers
         public ActionResult AddPost(string Title, string Text, IEnumerable<HttpPostedFileBase> Files, bool Published)
         {
             ApplicationDbContext Context = new ApplicationDbContext();
-            ApplicationUser CurrendUser = Context.Users.Find(User.Identity.GetUserId());
-            Text = Text.Replace("\r\n", "<br/>");
-            Post NewPost = new Post() { Title = Title, Text = Text, Autor = CurrendUser, Date = DateTime.Now, Confession = CurrendUser.Confession, Published = Published};
-
-            NewPost.Files.AddRange(AddFiles(Files, NewPost));
-
-            if(User.IsInRole("administrator"))
+            if(string.IsNullOrEmpty(Title))
             {
-                NewPost.Global = true;
+                ModelState.AddModelError("Title", "Назва поста не введена");
             }
 
-            Context.Posts.Add(NewPost);
-            Context.SaveChangesAsync();
+            if(ModelState.IsValid)
+            {
+                ApplicationUser CurrendUser = Context.Users.Find(User.Identity.GetUserId());
+                Text = Text.Replace("\r\n", "<br/>");
+                Post NewPost = new Post() { Title = Title, Text = Text, Autor = CurrendUser, Date = DateTime.Now, Published = Published };
 
-            return RedirectToAction("PostManager");
+                NewPost.Files.AddRange(AddFiles(Files, NewPost));
+
+                if (User.IsInRole("administrator"))
+                {
+                    NewPost.Global = true;
+                }
+                else
+                {
+                    NewPost.Confession = CurrendUser.Confession;
+                }
+
+                Context.Posts.Add(NewPost);
+                Context.SaveChangesAsync();
+
+                return RedirectToAction("PostManager");
+            }
+
+           return RedirectToAction("PostManager");
         }
 
         [HttpPost]
         [Authorize(Roles = "pastor")]
         public ActionResult EditPost(int Id, string Title, string Text, IEnumerable<HttpPostedFileBase> Files)
         {
-            ApplicationDbContext Context = new ApplicationDbContext();
-            Post PostForEdit = Context.Posts.Find(Id);
-            PostForEdit.Title = Title;
-            Text = Text.Replace("\r\n", "<br/>");
-            PostForEdit.Text = Text;
+            if (string.IsNullOrEmpty(Title))
+            {
+                ModelState.AddModelError("Title", "Назва поста не введена");
+            }
 
-            PostForEdit.Files.AddRange(AddFiles(Files, PostForEdit));
+            if(ModelState.IsValid)
+            {
+                ApplicationDbContext Context = new ApplicationDbContext();
+                Post PostForEdit = Context.Posts.Find(Id);
+                PostForEdit.Title = Title;
+                Text = Text.Replace("\r\n", "<br/>");
+                PostForEdit.Text = Text;
 
-            Context.SaveChanges();
+                PostForEdit.Files.AddRange(AddFiles(Files, PostForEdit));
 
+                Context.SaveChanges();
+
+                return RedirectToAction("PostManager");
+            }
             return RedirectToAction("PostManager");
         }
 
@@ -199,7 +220,7 @@ namespace PastorNub.Controllers
 
             ApplicationUser CurrentUser = Contex.Users.Find(User.Identity.GetUserId());
             ApplicationUser Pastor = Contex.Users.Find(Id);
-                
+
 
             if (Contex.Subscriptions.Where(i => i.User.Id == CurrentUser.Id && i.Pastor.Id == Pastor.Pastor.Id).Count() <= 0)
             {

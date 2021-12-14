@@ -1,11 +1,11 @@
-﻿using System;
+﻿using Microsoft.AspNet.Identity;
+using Microsoft.AspNet.Identity.EntityFramework;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Data.Entity;
 using System.Security.Claims;
 using System.Threading.Tasks;
-using Microsoft.AspNet.Identity;
-using Microsoft.AspNet.Identity.EntityFramework;
 
 namespace PastorNub.Models
 {
@@ -66,7 +66,7 @@ namespace PastorNub.Models
         public virtual ApplicationUser Autor { get; set; }
         public virtual Confession Confession { get; set; }
         public virtual List<File> Files { get; set; }
-        public virtual List <Favorite> Favorites { get; set; }
+        public virtual List<Favorite> Favorites { get; set; }
         public virtual List<Comments> Comments { get; set; }
 
         public Post()

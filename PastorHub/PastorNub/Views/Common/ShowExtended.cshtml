@@ -5,23 +5,31 @@
 }
 
 
-<div class="col-12" style="margin-top: -40px;">
-    <img height="50" width="50" style="display: inline;" src="~/Files/Avatar/@Model.Autor.Avatar" />
-    <div class="d-inline">
-        <a href="~/Channel/Index/@Model.Autor.Id" style="z-index: 2; position: relative;" class="ml-2"><b>@Model.Autor.UserName</b></a>
-        <small class="ml-1">@Model.Date.ToString()</small>
-        <small class="ml-1" style="color: darkgray;">@Model.Confession.ConfessionName</small>
+    <div class="col-12" style="margin-top: -40px;">
+        @if (!Model.Global)
+        {
+            <img height="50" width="50" style="display: inline;" src="~/Files/Avatar/@Model.Autor.Avatar" />
+            <div class="d-inline">
+                <a href="~/Profile/Index/@Model.Autor.Id" style="z-index: 2; position: relative;" class="ml-2"><b>@Model.Autor.UserName</b></a>
+                <small class="ml-1">@Model.Date.ToString()</small>
+                <small class="ml-1" style="color: darkgray;">@Model.Confession.ConfessionName</small>
+            </div>
+        }
+        else
+        {
+            <img height="50" width="50" style="display: inline;" src="~/Files/Avatar/@Model.Autor.Avatar" />
+            <div class="d-inline">
+                <span style="z-index: 2; position: relative;" class="ml-2"><b>@Model.Autor.UserName</b></span>
+                <small class="ml-1">@Model.Date.ToString()</small>
+            </div>
+        }
     </div>
-    <div class="d-inline">
-
-    </div>
-</div>
 <div class="col-12">
     <hr />
 </div>
 <h2 class="mt-4 col-12">@Model.Title</h2>
 <p style="word-break: break-word;" class="col-10 mt-5 offset-1 text-left">
-    @Html.Raw(Model.Text);
+    @Html.Raw(Model.Text)
 </p>
 @if (Model.Files.Count > 0)
 {

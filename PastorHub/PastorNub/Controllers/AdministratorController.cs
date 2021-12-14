@@ -1,8 +1,5 @@
 ﻿using PastorNub.Models;
-using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Web;
 using System.Web.Mvc;
 
 namespace PastorNub.Controllers
@@ -23,11 +20,20 @@ namespace PastorNub.Controllers
         [HttpPost]
         public ActionResult CreateConfession(string Title)
         {
-            ApplicationDbContext Context = new ApplicationDbContext();
-            Confession NewConfession = new Confession() { ConfessionName = Title};
-            Context.Confessions.Add(NewConfession);
-            Context.SaveChanges();
+            if(string.IsNullOrEmpty(Title))
+            {
+                ModelState.AddModelError("Title", "Назва конфесії не введена");
+            }
 
+            if(ModelState.IsValid)
+            {
+                ApplicationDbContext Context = new ApplicationDbContext();
+                Confession NewConfession = new Confession() { ConfessionName = Title };
+                Context.Confessions.Add(NewConfession);
+                Context.SaveChanges();
+
+                return RedirectToAction("ConfessionsManager");
+            }
             return RedirectToAction("ConfessionsManager");
         }
 
@@ -42,11 +48,19 @@ namespace PastorNub.Controllers
         [HttpPost]
         public ActionResult EditConfession(int Id, string Name)
         {
-            ApplicationDbContext Contex = new ApplicationDbContext();
-            Confession ConfessionForEdit = Contex.Confessions.Find(Id);
-            ConfessionForEdit.ConfessionName = Name;
-            Contex.SaveChanges();
+            if (string.IsNullOrEmpty(Name))
+            {
+                ModelState.AddModelError("Name", "Назва конфесії не введена");
+            }
+            if(ModelState.IsValid)
+            {
+                ApplicationDbContext Contex = new ApplicationDbContext();
+                Confession ConfessionForEdit = Contex.Confessions.Find(Id);
+                ConfessionForEdit.ConfessionName = Name;
+                Contex.SaveChanges();
 
+                return RedirectToAction("ConfessionsManager");
+            }
             return RedirectToAction("ConfessionsManager");
         }
 

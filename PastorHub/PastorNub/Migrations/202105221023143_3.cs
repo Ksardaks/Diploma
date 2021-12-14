@@ -1,8 +1,7 @@
 namespace PastorNub.Migrations
 {
-    using System;
     using System.Data.Entity.Migrations;
-    
+
     public partial class _3 : DbMigration
     {
         public override void Up()
@@ -22,18 +21,18 @@ namespace PastorNub.Migrations
             DropColumn("dbo.Confessions", "UserConfession_Id");
             DropTable("dbo.UserConfessionApplicationUsers");
         }
-        
+
         public override void Down()
         {
             CreateTable(
                 "dbo.UserConfessionApplicationUsers",
                 c => new
-                    {
-                        UserConfession_Id = c.Int(nullable: false),
-                        ApplicationUser_Id = c.String(nullable: false, maxLength: 128),
-                    })
+                {
+                    UserConfession_Id = c.Int(nullable: false),
+                    ApplicationUser_Id = c.String(nullable: false, maxLength: 128),
+                })
                 .PrimaryKey(t => new { t.UserConfession_Id, t.ApplicationUser_Id });
-            
+
             AddColumn("dbo.Confessions", "UserConfession_Id", c => c.Int());
             DropForeignKey("dbo.UserConfessions", "User_Id", "dbo.AspNetUsers");
             DropForeignKey("dbo.UserConfessions", "Confession_Id", "dbo.Confessions");

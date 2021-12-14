@@ -1,4 +1,4 @@
-﻿@using Microsoft.AspNet.Identity;
+﻿d@using Microsoft.AspNet.Identity;
 @using PastorNub.Models;
 @model PastorNub.Models.ApplicationUser
 @{
@@ -116,13 +116,13 @@
 </div>
 
 <script>
-    //Функция отображения PopUp
+
     function PopUpShow(id, fileId) {
         $('body').css('overflow-y', 'hidden');
         document.getElementById("File" + fileId).setAttribute("class", "active carousel-item");
         document.getElementById("popup" + id).setAttribute("style", "display: block;");
     }
-    //Функция скрытия PopUp
+
     function PopUpHide(id) {
         $(".carousel-item").removeClass("active");
         $('body').css('overflow-y', 'scroll');

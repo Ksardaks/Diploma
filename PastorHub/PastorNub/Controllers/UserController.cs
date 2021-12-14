@@ -1,10 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Web;
-using System.Web.Mvc;
-using Microsoft.AspNet.Identity;
+﻿using Microsoft.AspNet.Identity;
 using PastorNub.Models;
+using System.Linq;
+using System.Web.Mvc;
 
 namespace PastorNub.Controllers
 {
@@ -12,7 +9,7 @@ namespace PastorNub.Controllers
     {
         public ActionResult Subscriptions()
         {
-           
+
             ApplicationDbContext Context = new ApplicationDbContext();
             string Id = User.Identity.GetUserId();
             return View(Context.Subscriptions.Where(i => i.User.Id == Id).ToList());

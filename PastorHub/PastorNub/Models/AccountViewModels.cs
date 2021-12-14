@@ -48,11 +48,11 @@ namespace PastorNub.Models
 
     public class LoginViewModel
     {
-        [Required]
+        [Required(ErrorMessage = "Логін не введено")]
         [Display(Name = "Логін")]
         public string Login { get; set; }
 
-        [Required]
+        [Required(ErrorMessage = "Пароль не введений")]
         [DataType(DataType.Password)]
         [Display(Name = "Пароль")]
         public string Password { get; set; }

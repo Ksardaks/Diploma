@@ -2,6 +2,8 @@
     <div class="row jumbotron col-9 offset-1 mt-5">
         @using (Html.BeginForm("AddPost", "Profile", FormMethod.Post, new { @class = "form-horizontal col-12 text-center", role = "form", enctype = "multipart/form-data" }))
         {
+
+            @Html.ValidationSummary()
             <hr />
             <div class="form-group mt-2">
                 <label class="col-md-12 control-label">Назва</label>

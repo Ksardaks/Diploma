@@ -1,14 +1,14 @@
-﻿using System;
+﻿using Microsoft.AspNet.Identity;
+using Microsoft.AspNet.Identity.Owin;
+using Microsoft.Owin.Security;
+using PastorNub.Models;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Web;
 using System.Web.Mvc;
-using Microsoft.AspNet.Identity;
-using Microsoft.AspNet.Identity.Owin;
-using Microsoft.Owin.Security;
-using PastorNub.Models;
 
 namespace PastorNub.Controllers
 {
@@ -35,9 +35,9 @@ namespace PastorNub.Controllers
         {
             ApplicationDbContext Context = new ApplicationDbContext();
             ApplicationUser CurrentUser = Context.Users.Find(User.Identity.GetUserId());
-            if(File != null)
+            if (File != null)
             {
-                string FileName = CurrentUser.Id + "avatar" + Path.GetExtension(File.FileName);
+                string FileName = CurrentUser.UserName + "avatar" + Path.GetExtension(File.FileName);
                 File.SaveAs(Server.MapPath("~/Files/Avatar/" + FileName));
                 CurrentUser.Avatar = FileName;
                 Context.SaveChanges();
@@ -75,16 +75,16 @@ namespace PastorNub.Controllers
                 ChangeInfoModel.Month = DateTime.Parse(user.Born).Month.ToString();
                 ChangeInfoModel.Year = DateTime.Parse(user.Born).Year.ToString();
             }
-            if(User.IsInRole("pastor") && !User.IsInRole("administrator"))
+            if (User.IsInRole("pastor") && !User.IsInRole("administrator"))
             {
                 ChangeInfoModel.Education = user.Pastor.Education;
             }
             if (user.Confession != null)
-            {            
+            {
                 ChangeInfoModel.Confession = user.Confession.ConfessionName;
             }
-            
-            foreach(var i in user.UserConfessions)
+
+            foreach (var i in user.UserConfessions)
             {
                 ChangeInfoModel.AvaibleConfessions.Add(i.Confession);
             }
@@ -124,27 +124,40 @@ namespace PastorNub.Controllers
         [HttpPost]
         public ActionResult ChangePersonalInfo(ChangePersonalInfo model)
         {
-            if(ModelState.IsValid)
+            ApplicationDbContext context = new ApplicationDbContext();
+            ApplicationUser user = context.Users.Find(User.Identity.GetUserId());
+
+            if (user.Confession != null)
             {
-                ApplicationDbContext context = new ApplicationDbContext();
-                ApplicationUser user = context.Users.Find(User.Identity.GetUserId());
+                model.Confession = user.Confession.ConfessionName;
+            }
 
-                if (model.Confession != "-")
-                {
-                    user.Confession = context.Confessions.Where(i => i.ConfessionName == model.Confession).FirstOrDefault(); 
-                }
+            foreach (var i in user.UserConfessions)
+            {
+                model.AvaibleConfessions.Add(i.Confession);
+            }
 
+            if (ModelState.IsValid)
+            {
+             
                 user.Name = model.Name;
                 user.Surname = model.Surname;
                 user.MiddleName = model.MiddleName;
-                if (model.Day != "-" && model.Month != "-" && model.Year != "-")
+                if(!User.IsInRole("administrator"))
                 {
-                    user.Born = new DateTime(Int32.Parse(model.Year), Int32.Parse(model.Month), Int32.Parse(model.Day)).ToShortDateString();
-                }
-                if (User.IsInRole("pastor") && !User.IsInRole("administrator"))
-                {
-                    user.Pastor.Education = model.Education;
-                }
+                    if (model.Confession != "-")
+                    {
+                        user.Confession = context.Confessions.Where(i => i.ConfessionName == model.Confession).FirstOrDefault();
+                    }
+                    if (model.Day != "-" && model.Month != "-" && model.Year != "-")
+                    {
+                        user.Born = new DateTime(Int32.Parse(model.Year), Int32.Parse(model.Month), Int32.Parse(model.Day)).ToShortDateString();
+                    }
+                    if (User.IsInRole("pastor"))
+                    {
+                        user.Pastor.Education = model.Education;
+                    }
+                }            
                 context.SaveChanges();
                 return RedirectToAction("Index");
             }
@@ -163,9 +176,9 @@ namespace PastorNub.Controllers
             {
                 return _signInManager ?? HttpContext.GetOwinContext().Get<ApplicationSignInManager>();
             }
-            private set 
-            { 
-                _signInManager = value; 
+            private set
+            {
+                _signInManager = value;
             }
         }
 
@@ -448,7 +461,7 @@ namespace PastorNub.Controllers
             base.Dispose(disposing);
         }
 
-#region Вспомогательные приложения
+        #region Вспомогательные приложения
         // Используется для защиты от XSRF-атак при добавлении внешних имен входа
         private const string XsrfKey = "XsrfId";
 
@@ -499,6 +512,6 @@ namespace PastorNub.Controllers
             Error
         }
 
-#endregion
+        #endregion
     }
 }

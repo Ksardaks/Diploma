@@ -1,17 +1,16 @@
-﻿using System;
+﻿using Microsoft.AspNet.Identity;
+using PastorNub.Models;
+using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Web;
-using PastorNub.Models;
 using System.Web.Mvc;
-using Microsoft.AspNet.Identity;
 
 namespace PastorNub.Controllers
 {
     public class CommonController : Controller
     {
-        static string SearchText = "";
-        static bool OnlyFavorite = false;
+        private static string SearchText = "";
+        private static bool OnlyFavorite = false;
 
         public ActionResult Search(string Id = "", string Text = "")
         {
@@ -22,7 +21,7 @@ namespace PastorNub.Controllers
 
             if (OnlyFavorite)
             {
-                foreach (var i in Context.Favorites.Where(i => i.User.Id == CurrentUser.Id).OrderByDescending(i => i.Post.Date).ToList())
+                foreach (Favorite i in Context.Favorites.Where(i => i.User.Id == CurrentUser.Id).OrderByDescending(i => i.Post.Date).ToList())
                 {
                     PostList.Add(i.Post);
                 }
@@ -39,15 +38,15 @@ namespace PastorNub.Controllers
             }
             if (CurrentUser != null)
             {
-                PostList = PostList.Where(i => CurrentUser.Confession == null ? true : i.Confession.ConfessionName == CurrentUser.Confession.ConfessionName).ToList();
+                PostList = PostList.Where(i => i.Global == true ? true : (CurrentUser.Confession == null ? true : i.Confession.ConfessionName == CurrentUser.Confession.ConfessionName)).ToList();
             }
 
             return PartialView("PostList", PostList);
         }
 
-        public ActionResult PostList(string Id = "", string SortBy = "", bool ?Ascending = true, bool ?Favorite = null)
+        public ActionResult PostList(string Id = "", string SortBy = "", bool? Ascending = true, bool? Favorite = null)
         {
-            if(Favorite != null)
+            if (Favorite != null)
             {
                 OnlyFavorite = Favorite.Value;
             }
@@ -56,10 +55,10 @@ namespace PastorNub.Controllers
             ApplicationUser CurrentUser = Context.Users.Find(User.Identity.GetUserId());
 
             List<Post> PostList = new List<Post>();
-          
-            if(OnlyFavorite)
+
+            if (OnlyFavorite)
             {
-                foreach (var i in Context.Favorites.Where(i => i.User.Id == CurrentUser.Id).OrderByDescending(i => i.Post.Date).ToList())
+                foreach (Favorite i in Context.Favorites.Where(i => i.User.Id == CurrentUser.Id).OrderByDescending(i => i.Post.Date).ToList())
                 {
                     PostList.Add(i.Post);
                 }
@@ -72,16 +71,16 @@ namespace PastorNub.Controllers
             if (SearchText != "")
             {
                 PostList = PostList.Where(i => i.Title.Contains(SearchText) || i.Text.Contains(SearchText) || i.Autor.UserName.Contains(SearchText)).ToList();
-            }               
+            }
             PostList = PostList.Where(i => Id == "" ? true : (i.Autor.Id == Id)).ToList();
-            if(CurrentUser != null)
+            if (CurrentUser != null)
             {
-                PostList = PostList.Where(i => CurrentUser.Confession == null ? true : i.Confession.ConfessionName == CurrentUser.Confession.ConfessionName).ToList();
+                PostList = PostList.Where(i => i.Global == true ? true : (CurrentUser.Confession == null ? true : i.Confession.ConfessionName == CurrentUser.Confession.ConfessionName)).ToList();
             }
 
-            if (SortBy != String.Empty)
+            if (SortBy != string.Empty)
             {
-                if(Ascending.Value)
+                if (Ascending.Value)
                 {
                     switch (SortBy)
                     {
@@ -94,7 +93,7 @@ namespace PastorNub.Controllers
                         case "Fav":
                             PostList = PostList.OrderBy(i => i.Favorites.Count).ToList();
                             return PartialView(PostList);
-                    }       
+                    }
                 }
                 else
                 {
@@ -128,10 +127,17 @@ namespace PastorNub.Controllers
         [HttpPost]
         public ActionResult EditComment(int Id, string Text)
         {
+            if (string.IsNullOrEmpty(Text))
+            {
+                ModelState.AddModelError("Text", "Не введено текст коментаря");
+            }
             ApplicationDbContext Context = new ApplicationDbContext();
             Comments CommentForEdit = Context.Comments.Find(Id);
-            CommentForEdit.Text = Text.Replace("\r\n", "<br/>");
-            Context.SaveChanges();
+            if (ModelState.IsValid)
+            {   
+                CommentForEdit.Text = Text.Replace("\r\n", "<br/>");
+                Context.SaveChanges();
+            }
             return PartialView(CommentForEdit);
         }
 
@@ -174,10 +180,11 @@ namespace PastorNub.Controllers
             //Checking if user doesn't have this post in favorites
             if (Context.Favorites.Where(i => i.User.Id == CurrentUser.Id && i.Post.Id == TargetPost.Id).Count() <= 0)
             {
-                Favorite NewFavorite = new Favorite();
-               
-                NewFavorite.Post = TargetPost;
-                NewFavorite.User = CurrentUser;
+                Favorite NewFavorite = new Favorite
+                {
+                    Post = TargetPost,
+                    User = CurrentUser
+                };
 
                 CurrentUser.Favorites.Add(NewFavorite);
                 TargetPost.Favorites.Add(NewFavorite);
@@ -213,22 +220,31 @@ namespace PastorNub.Controllers
         [HttpPost]
         public ActionResult Comment(int Id, string Text)
         {
+            if(string.IsNullOrEmpty(Text))
+            {
+                ModelState.AddModelError("Text", "Не введено текст коментаря");
+            }
+
             ApplicationDbContext Context = new ApplicationDbContext();
             ApplicationUser CurrentUser = Context.Users.Find(User.Identity.GetUserId());
             Post TargetPost = Context.Posts.Find(Id);
 
-            Comments NewComment = new Comments();
+            if (ModelState.IsValid)
+            {
+                Comments NewComment = new Comments
+                {
+                    Autor = CurrentUser,
+                    Date = DateTime.Now,
+                    Text = Text.Replace("\r\n", "<br/>"),
+                    Post = TargetPost
+                };
 
-            NewComment.Autor = CurrentUser;
-            NewComment.Date = DateTime.Now;
-            NewComment.Text = Text.Replace("\r\n", "<br/>");
-            NewComment.Post = TargetPost;
+                TargetPost.Comments.Add(NewComment);
 
-            TargetPost.Comments.Add(NewComment);
+                Context.Comments.Add(NewComment);
 
-            Context.Comments.Add(NewComment);
-
-            Context.SaveChanges();
+                Context.SaveChanges();
+            }
 
             return PartialView(TargetPost.Comments);
         }
@@ -264,7 +280,7 @@ namespace PastorNub.Controllers
                 ChatMessage LastMessage = new ChatMessage();
 
 
-                foreach (var Item in Context.ChatRooms.Where(i => i.FirstUser.Id == CurrentUser.Id || i.SecondUser.Id == CurrentUser.Id).ToList())
+                foreach (ChatRoom Item in Context.ChatRooms.Where(i => i.FirstUser.Id == CurrentUser.Id || i.SecondUser.Id == CurrentUser.Id).ToList())
                 {
                     if (Item.ChatMessages.ToList().Count() != 0)
                     {
@@ -274,7 +290,7 @@ namespace PastorNub.Controllers
                             RecentMessages.Add(Item);
                         }
                     }
-                  
+
                 }
             }
 
@@ -287,7 +303,7 @@ namespace PastorNub.Controllers
             List<Post> Posts = new List<Post>();
             if (Id != null)
             {
-                foreach (var item in Context.Subscriptions.Where(i => i.User.Id == Id).ToList())
+                foreach (Subscriptions item in Context.Subscriptions.Where(i => i.User.Id == Id).ToList())
                 {
                     Id = item.Pastor.User.Id;
                     Posts.AddRange(Context.Posts.Where(i => i.Autor.Id == Id
@@ -302,12 +318,6 @@ namespace PastorNub.Controllers
         public ActionResult SortMenu(string Id)
         {
             return PartialView(Id.ToCharArray());
-        }
-
-        public ActionResult Recent()
-        {
-            int a = 121;
-            return PartialView(a);
         }
     }
 }

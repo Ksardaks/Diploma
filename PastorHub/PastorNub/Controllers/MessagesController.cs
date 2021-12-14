@@ -1,12 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using Microsoft.AspNet.Identity;
+using PastorNub.Models;
+using System;
 using System.Linq;
 using System.Security.Cryptography;
 using System.Text;
-using System.Web;
 using System.Web.Mvc;
-using Microsoft.AspNet.Identity;
-using PastorNub.Models;
 
 namespace PastorNub.Controllers
 {
@@ -30,11 +28,11 @@ namespace PastorNub.Controllers
 
             ApplicationUser CurrentUser = Context.Users.Find(User.Identity.GetUserId());
             ApplicationUser TargetUser = Context.Users.Find(Id);
-            if(CurrentUser == null || TargetUser == null)
+            if (CurrentUser == null || TargetUser == null)
             {
                 return HttpNotFound();
             }
-            if(CurrentUser.Pastor == null && TargetUser.Pastor == null)
+            if (CurrentUser.Pastor == null && TargetUser.Pastor == null)
             {
                 return HttpNotFound();
             }
@@ -78,23 +76,31 @@ namespace PastorNub.Controllers
         [Authorize]
         public ActionResult WriteMessage(int Id, string Text)
         {
+            if(string.IsNullOrEmpty(Text))
+            {
+                ModelState.AddModelError("", "");
+            }
             ApplicationDbContext Context = new ApplicationDbContext();
 
             ApplicationUser CurrentUser = Context.Users.Find(User.Identity.GetUserId());
             ChatRoom CurrentChat = Context.ChatRooms.Find(Id);
 
-            ChatMessage NewChatMessage = new ChatMessage();
-            NewChatMessage.User = CurrentUser;
-            NewChatMessage.Chat = CurrentChat;
-            NewChatMessage.Date = DateTime.Now;
-            NewChatMessage.Message = Text.Replace("\r\n", "<br/>");
+            if (ModelState.IsValid)
+            {
 
-            CurrentChat.ChatMessages.Add(NewChatMessage);
+                ChatMessage NewChatMessage = new ChatMessage();
+                NewChatMessage.User = CurrentUser;
+                NewChatMessage.Chat = CurrentChat;
+                NewChatMessage.Date = DateTime.Now;
+                NewChatMessage.Message = Text.Replace("\r\n", "<br/>");
 
-            Context.SaveChanges();
+                CurrentChat.ChatMessages.Add(NewChatMessage);
 
+                Context.SaveChanges();
+
+            }
             return PartialView(CurrentChat);
         }
-        
+
     }
 }

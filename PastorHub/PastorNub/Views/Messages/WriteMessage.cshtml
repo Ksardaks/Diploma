@@ -3,12 +3,13 @@
 
 @foreach (var i in Model.ChatMessages)
 {
-    <div class="row col-4 mr-auto ml-auto mt-5 pl-0 pr-0 pt-4 pb-4 @if (i.User.Id == User.Identity.GetUserId()) { @("") } " style="@if (i.User.Id != User.Identity.GetUserId()) { @("background-color:Gainsboro; right: 120px;") } else { @("background-color:lightblue; left: 120px;") } ">
+    <div class="row col-4 mr-auto ml-auto mt-3 jumbotron pl-0 pr-0 pt-4 pb-4 @if (i.User.Id == User.Identity.GetUserId()) { @("") } " style="@if (i.User.Id != User.Identity.GetUserId()) { @("right: 120px;") } else { @("background-color:lightblue; left: 120px; color: black;") } ">
         <div class="col-12">
+            <img height="50" width="50" style="display: inline;" src="~/Files/Avatar/@i.User.Avatar" />
             <strong class="ml-3">@i.User.UserName</strong>
             <small class="ml-1">@i.Date.ToShortDateString() @i.Date.ToShortTimeString()</small>
-            <div class="col-12 ml-1" style="word-wrap: break-word;">
-                @Html.Raw(i.Message)
+            <div class="col-12 ml-1" style="word-wrap: break-word; left: 50px; top: -10px;">
+                @Html.Raw(i.Message)    
             </div>
         </div>
     </div>

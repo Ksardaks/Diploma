@@ -37,78 +37,85 @@
                         @Html.TextBoxFor(m => m.MiddleName, new { @class = "form-control col-4 mr-auto ml-auto" })
                     </div>
                 </div>
-
-                <div class="form-group">
-                    <label class="col-md-12 control-label">Конфесія (обов'язкове поле)</label>
-                    <div class="col-md-12">
-                        <select name="Confession" class="form-control col-4 mr-auto ml-auto">
-                            <option>-</option>
-                            @foreach (var i in Model.AvaibleConfessions.ToList())
-                            {
-                                <option @if (i != null && Model.Confession != null) { if (i.ConfessionName.ToLower().Equals(Model.Confession.ToLower())) { @("selected") } }>
-                                    @(i.ConfessionName)
-                                </option>
-                            }
-                        </select>
-                    </div>
-                </div>
-
-                if (User.IsInRole("pastor") && !User.IsInRole("administrator"))
+                if (!User.IsInRole("administrator"))
                 {
                     <div class="form-group">
-                        @Html.LabelFor(m => m.Education, new { @class = "col-md-12 control-label" })
+                        <label class="col-md-12 control-label">Конфесія (обов'язкове поле)</label>
                         <div class="col-md-12">
-                            @Html.TextBoxFor(m => m.Education, new { @class = "form-control col-4 mr-auto ml-auto" })
+                            <select name="Confession" class="form-control col-4 mr-auto ml-auto">
+                                <option></option>
+                                @foreach (var i in Model.AvaibleConfessions.ToList())
+                                {
+                                    <option @if (i != null && Model.Confession != null) { if (i.ConfessionName.ToLower().Equals(Model.Confession.ToLower())) { @("selected") } }>
+                                        @(i.ConfessionName)
+                                    </option>
+                                }
+                            </select>
+                        </div>
+                    </div>
+
+                    if (User.IsInRole("pastor") && !User.IsInRole("administrator"))
+                    {
+                        <div class="form-group">
+                            @Html.LabelFor(m => m.Education, new { @class = "col-md-12 control-label" })
+                            <div class="col-md-12">
+                                @Html.TextBoxFor(m => m.Education, new { @class = "form-control col-4 mr-auto ml-auto" })
+                            </div>
+                        </div>
+                    }
+
+                    <div class="form-group mb-5">
+                        <label class="col-md-12 control-label">Дата народження</label>
+                        <div class="col-md-12 row mr-auto ml-auto">
+                            <div class="col-5 row mr-auto ml-auto">
+
+                                <div class="col-3 row ml-auto mr-auto">
+                                    <label class="control-label col-12">День</label>
+                                    <select class="form-control col-12" name="Day">
+                                        <option>-</option>
+                                        @for (int i = 1; i <= 31; i++)
+                                        {
+                                            <option @if (Model.Day != null) { if (Model.Day.Equals(i.ToString())) { @("selected") } }>
+                                                @i
+                                            </option>
+                                        }
+                                    </select>
+                                </div>
+
+                                <div class="col-3 row mr-auto ml-auto">
+                                    <label class="control-label col-12">Місяць</label>
+                                    <select class="form-control col-12" name="Month">
+                                        <option>-</option>
+                                        @for (int i = 1; i <= 12; i++)
+                                        {
+                                            <option @if (Model.Month != null) { if (Model.Month.Equals(i.ToString())) { @("selected") } }>
+                                                @i
+                                            </option>
+                                        }
+                                    </select>
+                                </div>
+
+                                <div class="col-4 row ml-auto mr-auto">
+                                    <label class="control-label col-12">Рік</label>
+                                    <select class="form-control col-12" name="Year">
+                                        <option>-</option>
+                                        @for (int i = DateTime.Now.Year; i >= 1960; i = i - 1)
+                                        {
+                                            <option @if (Model.Year != null) { if (Model.Year.Equals(i.ToString())) { @("selected") } }>
+                                                @i
+                                            </option>
+                                        }
+                                    </select>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 }
+                else
+                {
+                    <input name="Confession" value="-" hidden />
+                }
 
-                <div class="form-group mb-5">
-                    <label class="col-md-12 control-label">Дата народження</label>
-                    <div class="col-md-12 row mr-auto ml-auto">
-                        <div class="col-5 row mr-auto ml-auto">
-
-                            <div class="col-3 row ml-auto mr-auto">
-                                <label class="control-label col-12">День</label>
-                                <select class="form-control col-12" name="Day">
-                                    <option>-</option>
-                                    @for (int i = 1; i <= 31; i++)
-                                    {
-                                        <option @if (Model.Day != null) { if (Model.Day.Equals(i.ToString())) { @("selected") } }>
-                                            @i
-                                        </option>
-                                    }
-                                </select>
-                            </div>
-
-                            <div class="col-3 row mr-auto ml-auto">
-                                <label class="control-label col-12">Місяць</label>
-                                <select class="form-control col-12" name="Month">
-                                    <option>-</option>
-                                    @for (int i = 1; i <= 12; i++)
-                                    {
-                                        <option @if (Model.Month != null) { if (Model.Month.Equals(i.ToString())) { @("selected") } }>
-                                            @i
-                                        </option>
-                                    }
-                                </select>
-                            </div>
-
-                            <div class="col-4 row ml-auto mr-auto">
-                                <label class="control-label col-12">Рік</label>
-                                <select class="form-control col-12" name="Year">
-                                    <option>-</option>
-                                    @for (int i = DateTime.Now.Year; i >= 1960; i = i - 1)
-                                    {
-                                        <option @if (Model.Year != null) { if (Model.Year.Equals(i.ToString())) { @("selected") } }>
-                                            @i
-                                        </option>
-                                    }
-                                </select>
-                            </div>
-                        </div>
-                    </div>
-                </div>
                 <div class="form-group mt-5">
                     <div class="col-md-12">
                         <input type="submit" class="btn col-4 btn-outline-success" value="Підтвердити" />

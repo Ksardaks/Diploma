@@ -119,6 +119,10 @@
 
                         <li class="nav-item "> <a href="~/Profile/PostManager" class="nav-link">Менеджер постів</a></li>
                     }
+                    if (User.IsInRole("administrator"))
+                    {
+                        <li class="nav-item "> <a href="~/Administrator/ConfessionsManager" class="nav-link">Менеджер конфесій</a></li>
+                    }
                     <li class="nav-item "> <a class="nav-link" href="/Common/Favorite/">Пости, які сподобалися</a></li>
                     <li class="nav-item "> <a href="~/Messages/Index" class="nav-link">Повідомлення</a></li>
                 }
@@ -130,6 +134,7 @@
         @RenderBody()
     </div>
 
+
     @Scripts.Render("~/bundles/jquery")
     @Scripts.Render("~/bundles/bootstrap")
     @Scripts.Render("~/scripts/jquery-3.5.1.js")
@@ -137,7 +142,7 @@
     @RenderSection("scripts", required: false)
 
 
-<script>
+    <script>
     function RenderMenu(Id) {
         $("#menu").attr("class", "container-fluid position-absolute position-fixed row");
         $("#menu").load('@Url.Action("Menu", "Common")', function () {
@@ -178,6 +183,6 @@
         document.cookie = "Theme=Light; path=/";
         document.getElementById("Theme").setAttribute("href", "@Url.Content("~/Content/LightTheme.css")");
     }
-</script>
+    </script>
 </body>
 </html>

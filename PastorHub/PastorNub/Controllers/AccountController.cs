@@ -1,16 +1,13 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Globalization;
-using System.Linq;
-using System.Security.Claims;
-using System.Threading.Tasks;
-using System.Web;
-using System.Web.Mvc;
-using Microsoft.AspNet.Identity;
-using Microsoft.AspNet.Identity.EntityFramework;
+﻿using Microsoft.AspNet.Identity;
 using Microsoft.AspNet.Identity.Owin;
 using Microsoft.Owin.Security;
 using PastorNub.Models;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
+using System.Web;
+using System.Web.Mvc;
 
 namespace PastorNub.Controllers
 {
@@ -24,7 +21,7 @@ namespace PastorNub.Controllers
         {
         }
 
-        public AccountController(ApplicationUserManager userManager, ApplicationSignInManager signInManager )
+        public AccountController(ApplicationUserManager userManager, ApplicationSignInManager signInManager)
         {
             UserManager = userManager;
             SignInManager = signInManager;
@@ -36,9 +33,9 @@ namespace PastorNub.Controllers
             {
                 return _signInManager ?? HttpContext.GetOwinContext().Get<ApplicationSignInManager>();
             }
-            private set 
-            { 
-                _signInManager = value; 
+            private set
+            {
+                _signInManager = value;
             }
         }
 
@@ -122,7 +119,7 @@ namespace PastorNub.Controllers
             // Если пользователь введет неправильные коды за указанное время, его учетная запись 
             // будет заблокирована на заданный период. 
             // Параметры блокирования учетных записей можно настроить в IdentityConfig
-            var result = await SignInManager.TwoFactorSignInAsync(model.Provider, model.Code, isPersistent:  model.RememberMe, rememberBrowser: model.RememberBrowser);
+            var result = await SignInManager.TwoFactorSignInAsync(model.Provider, model.Code, isPersistent: model.RememberMe, rememberBrowser: model.RememberBrowser);
             switch (result)
             {
                 case SignInStatus.Success:
@@ -154,31 +151,20 @@ namespace PastorNub.Controllers
             if (ModelState.IsValid)
             {
                 var user = new ApplicationUser() { UserName = model.Login, Email = model.Email, Avatar = "standart.png" };
-
                 if (model.AccountType.ToLower().Equals("pastor"))
                 {
                     user.Pastor = new Pastor();
                 }
-
                 var result = await UserManager.CreateAsync(user, model.Password);
                 if (result.Succeeded)
                 {
                     await UserManager.AddToRoleAsync(user.Id, model.AccountType.ToLower());
-
-                    await SignInManager.SignInAsync(user, isPersistent:false, rememberBrowser:false);
+                    await SignInManager.SignInAsync(user, isPersistent: false, rememberBrowser: false);
                     await SignInManager.PasswordSignInAsync(model.Login, model.Password, false, shouldLockout: false);
-                    // Дополнительные сведения о включении подтверждения учетной записи и сброса пароля см. на странице https://go.microsoft.com/fwlink/?LinkID=320771.
-                    // Отправка сообщения электронной почты с этой ссылкой
-                    // string code = await UserManager.GenerateEmailConfirmationTokenAsync(user.Id);
-                    // var callbackUrl = Url.Action("ConfirmEmail", "Account", new { userId = user.Id, code = code }, protocol: Request.Url.Scheme);
-                    // await UserManager.SendEmailAsync(user.Id, "Подтверждение учетной записи", "Подтвердите вашу учетную запись, щелкнув <a href=\"" + callbackUrl + "\">здесь</a>");
-
                     return RedirectToAction("SelectConfessions", "Account");
                 }
                 AddErrors(result);
             }
-
-            // Появление этого сообщения означает наличие ошибки; повторное отображение формы
             return View(model);
         }
 
@@ -189,18 +175,18 @@ namespace PastorNub.Controllers
             ApplicationUser CurrentUser = Context.Users.Find(User.Identity.GetUserId());
             ChangePersonalInfo Model = new ChangePersonalInfo();
 
-            foreach(var i in CurrentUser.UserConfessions)
+            foreach (var i in CurrentUser.UserConfessions)
             {
                 Model.AvaibleConfessions.Add(i.Confession);
             }
-            
+
             return View(Model);
         }
         [AllowAnonymous]
         public ActionResult SelectConfessions()
         {
             ApplicationDbContext Context = new ApplicationDbContext();
-            if(Context.Users.Find(User.Identity.GetUserId()).UserConfessions.Count < 4)
+            if (Context.Users.Find(User.Identity.GetUserId()).UserConfessions.Count < 4)
             {
                 return View(Context.Confessions.ToList());
             }
@@ -209,11 +195,16 @@ namespace PastorNub.Controllers
         [HttpPost]
         public ActionResult EnterPersonalInfo(ChangePersonalInfo model)
         {
+            ApplicationDbContext context = new ApplicationDbContext();
+            ApplicationUser user = context.Users.Find(User.Identity.GetUserId());
+            foreach (var i in user.UserConfessions)
+            {
+                model.AvaibleConfessions.Add(i.Confession);
+            }
+
             if (ModelState.IsValid)
             {
-                ApplicationDbContext context = new ApplicationDbContext();
-                ApplicationUser user = context.Users.Find(User.Identity.GetUserId());
-
+             
                 if (model.Confession != "-")
                 {
                     user.Confession = context.Confessions.Where(i => i.ConfessionName == model.Confession).FirstOrDefault();
@@ -225,7 +216,7 @@ namespace PastorNub.Controllers
                 if (model.Day != "-" && model.Month != "-" && model.Year != "-")
                 {
                     user.Born = new DateTime(Int32.Parse(model.Year), Int32.Parse(model.Month), Int32.Parse(model.Day)).ToShortDateString();
-                }           
+                }
                 if (User.IsInRole("pastor") && !User.IsInRole("administrator"))
                 {
                     user.Pastor.Education = model.Education;
@@ -240,26 +231,34 @@ namespace PastorNub.Controllers
         public ActionResult SelectConfessions(List<string> SConfessions)
         {
             ApplicationDbContext Context = new ApplicationDbContext();
-            if(SConfessions != null)
+            if(SConfessions == null)
             {
-                if (SConfessions.Count <= 4)
-                {
-                    ApplicationUser CurrentUser = Context.Users.Find(User.Identity.GetUserId());
-
-                    UserConfession NewUserConfession = new UserConfession();
-                    foreach (var ConfessionName in SConfessions)
-                    {
-                        NewUserConfession.User = CurrentUser;
-                        NewUserConfession.Confession = Context.Confessions.Where(i => i.ConfessionName == ConfessionName).FirstOrDefault();
-                        CurrentUser.UserConfessions.Add(NewUserConfession);
-                        NewUserConfession = new UserConfession();
-                    }
-
-                    Context.SaveChanges();
-
-                    return RedirectToAction("EnterPersonalInfo", "Account");
-                }
+                ModelState.AddModelError("Confession", "Конфесії не обрані");
             }
+            if(ModelState.IsValid)
+            {
+                if (SConfessions != null)
+                {
+                    if (SConfessions.Count <= 4)
+                    {
+                        ApplicationUser CurrentUser = Context.Users.Find(User.Identity.GetUserId());
+
+                        UserConfession NewUserConfession = new UserConfession();
+                        foreach (var ConfessionName in SConfessions)
+                        {
+                            NewUserConfession.User = CurrentUser;
+                            NewUserConfession.Confession = Context.Confessions.Where(i => i.ConfessionName == ConfessionName).FirstOrDefault();
+                            CurrentUser.UserConfessions.Add(NewUserConfession);
+                            NewUserConfession = new UserConfession();
+                        }
+
+                        Context.SaveChanges();
+
+                        return RedirectToAction("EnterPersonalInfo", "Account");
+                    }
+                }   
+            }
+           
             return View(Context.Confessions.ToList());
         }
         //

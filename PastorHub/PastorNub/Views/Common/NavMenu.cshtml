@@ -10,6 +10,10 @@
             {
                 <a href="~/Profile/PostManager" class="col-12 mt-3 HubBtn d-block">Менеджер постів</a>
             }
+             if (User.IsInRole("administrator"))
+                    {
+                        <a href="~/Administrator/ConfessionsManager" class="col-12 mt-3 HubBtn d-block">Менеджер конфесій</a>
+                    }
             <a class="col-12 mt-3 HubBtn d-block" href="/Common/Favorite/">Пости, які сподобалися</a>
             <a href="~/Messages/Index" class="col-12 mt-3 HubBtn d-block">Повідомлення</a>
         }

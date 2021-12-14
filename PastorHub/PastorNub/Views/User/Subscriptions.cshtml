@@ -15,11 +15,11 @@
     @foreach (var item in Model)
     {
         <div class="jumbotron row col-6 mr-auto ml-auto mt-5 pl-0 pr-0 PostStyle pt-4 pb-4" style="z-index: 1;">
-            <a href="~/Channel/Index/@item.Pastor.User.Id" style="z-index: 4; width: 100%; height: 100%; display: block; position: absolute; top: 0;"></a>
+            <a href="~/Profile/Index/@item.Pastor.User.Id" style="z-index: 4; width: 100%; height: 100%; display: block; position: absolute; top: 0;"></a>
             <div class="col-12 mt-0">
                 <img height="50" width="50" style="display: inline;" src="https://vk-wiki.ru/wp-content/uploads/2019/06/user-1.png" />
                 <div class="d-inline">
-                    <a href="~/Channel/Index/@item.Pastor.User.Id" style="z-index: 2; position: relative;" class="ml-2"><b>@item.Pastor.User.UserName</b></a>
+                    <a href="~/Profile/Index/@item.Pastor.User.Id" style="z-index: 2; position: relative;" class="ml-2"><b>@item.Pastor.User.UserName</b></a>
                     <small class="ml-1">Слідкуючих: @item.Pastor.Subscribers.Count</small>
                     <small class="ml-1" style="color: darkgray;">@item.Pastor.User.Confession.ConfessionName</small>
                 </div>
@@ -30,10 +30,7 @@
 
 <script>
     document.addEventListener('DOMContentLoaded', function () {
-         $('#menu').append($("<div class='jumbotron text-center col-2 offset-2'>").load('@Url.Action("NavMenu", "Common")'));
-        $('#menu').append($("<div class='jumbotron text-center col-2 offset-4'>").load('@Url.Action("SortMenu", "Common")?Id=all'));
-        $('#menu').append($("<div class='jumbotron text-center col-2 offset-2'>").load('@Url.Action("MessagesMenu", "Common")'));
-        $('#menu').append($("<div class='jumbotron text-center col-2 offset-4'>").load('@Url.Action("RecentMenu", "Common")'));
+       RenderMenu("");
     });
 </script>
 

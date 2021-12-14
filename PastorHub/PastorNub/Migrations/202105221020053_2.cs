@@ -1,8 +1,7 @@
 namespace PastorNub.Migrations
 {
-    using System;
     using System.Data.Entity.Migrations;
-    
+
     public partial class _2 : DbMigration
     {
         public override void Up()
@@ -15,9 +14,9 @@ namespace PastorNub.Migrations
             DropIndex("dbo.Confessions", new[] { "UserConfession_Id" });
             DropColumn("dbo.Confessions", "UserConfession_Id");
             DropTable("dbo.UserConfessionApplicationUsers");
-            DropTable("dbo.UserConfessions");         
+            DropTable("dbo.UserConfessions");
         }
-        
+
         public override void Down()
         {
             CreateTable(

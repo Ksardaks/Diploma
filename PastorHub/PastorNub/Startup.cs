@@ -3,7 +3,6 @@ using Microsoft.AspNet.Identity.EntityFramework;
 using Microsoft.Owin;
 using Owin;
 using PastorNub.Models;
-using System.Threading.Tasks;
 
 [assembly: OwinStartupAttribute(typeof(PastorNub.Startup))]
 namespace PastorNub
@@ -14,7 +13,7 @@ namespace PastorNub
         {
             ApplicationDbContext context = new ApplicationDbContext();
             var roleManager = new RoleManager<IdentityRole>(new RoleStore<IdentityRole>(context));
-            if(!await roleManager.RoleExistsAsync("pastor"))
+            if (!await roleManager.RoleExistsAsync("pastor"))
             {
                 var role = new IdentityRole { Name = "pastor" };
                 await roleManager.CreateAsync(role);
@@ -30,11 +29,11 @@ namespace PastorNub
                 await roleManager.CreateAsync(role);
             }
             var userManager = new UserManager<ApplicationUser>(new UserStore<ApplicationUser>(context));
-            var admin = await userManager.FindByNameAsync("Administrator"); 
-            if(admin == null)
+            var admin = await userManager.FindByNameAsync("Administrator");
+            if (admin == null)
             {
-                var Admin = new ApplicationUser() 
-                { 
+                var Admin = new ApplicationUser()
+                {
                     UserName = "Administrator",
                     Email = "admin@admin.admin",
                     Avatar = "standart.png"
